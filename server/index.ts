@@ -1,69 +1,78 @@
-import express, { type Request, Response, NextFunction } from "express";
+
+import express from "express";
+import session from "express-session";
+import passport from "passport";
+import { Strategy as LocalStrategy } from "passport-local";
+import { drizzle } from "drizzle-orm/mysql2";
+import mysql from "mysql2/promise";
+import { registerVite } from "./vite";
 import { registerRoutes } from "./routes";
-import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
+const port = process.env.PORT || 5000;
+
+// Database setup
+const pool = mysql.createPool({
+  uri: process.env.DATABASE_URL!,
+  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
+});
+
+export const db = drizzle(pool);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use((req, res, next) => {
-  const start = Date.now();
-  const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
+// Session configuration
+app.use(session({
+  secret: process.env.SESSION_SECRET || "your-secret-key",
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
 
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
+app.use(passport.initialize());
+app.use(passport.session());
 
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
-
-      if (logLine.length > 80) {
-        logLine = logLine.slice(0, 79) + "…";
-      }
-
-      log(logLine);
+// Passport configuration
+passport.use(new LocalStrategy(
+  async (username: string, password: string, done) => {
+    // Simple authentication - replace with proper password hashing
+    if (username === "admin" && password === "password") {
+      return done(null, { id: 1, username: "admin" });
     }
-  });
+    return done(null, false);
+  }
+));
 
-  next();
+passport.serializeUser((user: any, done) => {
+  done(null, user.id);
 });
 
-(async () => {
-  const server = await registerRoutes(app);
+passport.deserializeUser((id: number, done) => {
+  done(null, { id, username: "admin" });
+});
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
+registerRoutes(app);
+registerVite(app);
 
-    res.status(status).json({ message });
-    throw err;
+const server = app.listen(port, "0.0.0.0", () => {
+  const formattedTime = new Date().toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
-    await setupVite(app, server);
+  console.log(`${formattedTime} [express] serving on port ${port}`);
+});
+
+server.on("error", (error: Error) => {
+  if (error.message.includes("EADDRINUSE")) {
+    console.log(`Port ${port} is in use. Please use a different port.`);
   } else {
-    serveStatic(app);
+    console.log("Server error:", error.message);
   }
-
-  // Serve the app on configurable port (5000 default for Replit, 3000 for local)
-  // this serves both the API and the client.
-  const port = process.env.PORT ? parseInt(process.env.PORT) : 5000;
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
-  });
-})();
+});

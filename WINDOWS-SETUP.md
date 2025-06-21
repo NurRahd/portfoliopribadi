@@ -1,72 +1,108 @@
 
-# Setup di Windows - VS Code
+# Setup Portfolio dengan MySQL di Windows
 
-## 🚀 Langkah-langkah Cepat
+## Prerequisites
+1. **MySQL Server** - Download dan install dari [mysql.com](https://dev.mysql.com/downloads/mysql/)
+2. **Node.js 20+** - Download dari [nodejs.org](https://nodejs.org/)
+3. **VS Code** (recommended)
 
-### 1. Download & Extract
-- Extract file ZIP ke folder baru
-- Buka folder di VS Code
+## Langkah Setup MySQL
 
-### 2. Install Dependencies
-Buka terminal di VS Code (`Ctrl+` ` ) dan jalankan:
-```bash
-npm run setup
+### 1. Install MySQL Server
+- Download MySQL Community Server
+- Jalankan installer dan ikuti wizard setup
+- **Penting:** Catat username dan password root MySQL
+
+### 2. Buat Database Portfolio
+Buka **MySQL Command Line Client** atau **MySQL Workbench**:
+
+```sql
+-- Login sebagai root
+mysql -u root -p
+
+-- Buat database baru
+CREATE DATABASE portfolio;
+
+-- Buat user baru (opsional tapi recommended)
+CREATE USER 'portfolio_user'@'localhost' IDENTIFIED BY 'your_password';
+GRANT ALL PRIVILEGES ON portfolio.* TO 'portfolio_user'@'localhost';
+FLUSH PRIVILEGES;
+
+-- Gunakan database
+USE portfolio;
 ```
 
-### 3. Setup Database
-**Pilihan A: Cloud Database (Mudah)**
-1. Buka [neon.tech](https://neon.tech)
-2. Buat akun gratis
-3. Buat database baru
-4. Copy connection string
-5. Rename `.env.example` jadi `.env`
-6. Paste connection string di `DATABASE_URL`
+### 3. Setup Project
+1. **Extract project ke folder baru**
+2. **Buka VS Code dan open folder tersebut**
+3. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-**Pilihan B: Local PostgreSQL**
-1. Download PostgreSQL dari postgresql.org
-2. Install dengan password yang mudah diingat
-3. Rename `.env.example` jadi `.env`
-4. Update `DATABASE_URL` dengan password Anda
+### 4. Setup Environment Variables
+1. **Copy `.env.example` menjadi `.env`**
+2. **Update `DATABASE_URL` di file `.env`:**
+   ```
+   # Jika menggunakan root user
+   DATABASE_URL="mysql://root:your_mysql_password@localhost:3306/portfolio"
+   
+   # Atau jika menggunakan user khusus
+   DATABASE_URL="mysql://portfolio_user:your_password@localhost:3306/portfolio"
+   ```
 
-### 4. Jalankan Aplikasi
+### 5. Setup Database Tables
+```bash
+npm run db:push
+```
+
+### 6. Start Development Server
 ```bash
 npm run dev
 ```
 
-**ATAU double-click file `start-vscode.bat`**
+### 7. Akses Portfolio
+- **Website:** http://localhost:5000
+- **Admin Panel:** http://localhost:5000/admin
+- **Login Admin:** username: `admin`, password: `password`
 
-### 5. Buka Browser
-- Portfolio: http://localhost:5000
-- Admin: http://localhost:5000/admin
-
-## ⚡ Quick Commands
+## Commands Berguna
 
 ```bash
-# Start development server
-npm run dev
+# Install dependencies
+npm install
 
 # Setup database tables
 npm run db:push
 
-# Check database (browser-based)
+# Start development
+npm run dev
+
+# View database (browser-based)
 npm run db:studio
 
 # Clean install
 npm run clean
 ```
 
-## 🔧 VS Code Tips
+## Troubleshooting
 
-1. Install recommended extensions (VS Code akan suggest otomatis)
-2. Gunakan `Ctrl+` ` untuk buka terminal
-3. Hot reload aktif - edit file langsung terlihat
-4. TypeScript auto-completion untuk database
+### Error "Access denied for user"
+- Pastikan username/password MySQL benar di `.env`
+- Pastikan MySQL service berjalan di Windows Services
 
-## 🎯 Edit Portfolio
+### Error "connect ECONNREFUSED"
+- Pastikan MySQL server berjalan
+- Check port 3306 tidak diblokir firewall
 
-1. Buka http://localhost:5000/admin
-2. Login: admin/admin
-3. Edit semua data pribadi
-4. Refresh portfolio untuk lihat perubahan
+### Error "Unknown database 'portfolio'"
+- Pastikan sudah membuat database `portfolio` di MySQL
 
-Portfolio siap untuk tugas IMK! 🚀
+### Port 5000 sudah digunakan
+- Ubah `PORT=5001` di file `.env`
+- Atau matikan aplikasi lain yang menggunakan port 5000
+
+## Tips
+- Gunakan **MySQL Workbench** untuk management database yang lebih mudah
+- Backup database secara berkala untuk keamanan data
+- Pastikan MySQL service start otomatis di Windows startup

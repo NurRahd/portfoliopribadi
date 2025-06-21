@@ -143,38 +143,44 @@ export function ArticleForm({ article, isOpen, onClose }: ArticleFormProps) {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="category">Category</Label>
-              <Select
-                defaultValue={watch("category")}
-                onValueChange={(value) => setValue("category", value)}
-              >
-                <SelectTrigger className="mt-2">
-                  <SelectValue placeholder="Select a category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Input
+                id="category"
+                {...register("category", { required: "Category is required" })}
+                placeholder="e.g., Web Development"
+              />
               {errors.category && (
-                <p className="text-sm text-destructive mt-1">{errors.category.message}</p>
+                <p className="text-red-500 text-sm mt-1">{errors.category.message}</p>
               )}
             </div>
-
             <div>
               <Label htmlFor="readTime">Read Time (minutes)</Label>
               <Input
                 id="readTime"
                 type="number"
-                {...register("readTime", { valueAsNumber: true })}
-                className="mt-2"
+                {...register("readTime", { 
+                  required: "Read time is required",
+                  valueAsNumber: true,
+                  min: 1
+                })}
+                placeholder="e.g., 5"
               />
               {errors.readTime && (
-                <p className="text-sm text-destructive mt-1">{errors.readTime.message}</p>
+                <p className="text-red-500 text-sm mt-1">{errors.readTime.message}</p>
               )}
             </div>
+          </div>
+
+          <div>
+            <Label htmlFor="url">Article URL (Optional)</Label>
+            <Input
+              id="url"
+              type="url"
+              {...register("url")}
+              placeholder="https://example.com/article"
+            />
+            <p className="text-sm text-muted-foreground mt-1">
+              Link eksternal ke artikel. Jika kosong, akan menampilkan notifikasi.
+            </p>
           </div>
 
           <div>

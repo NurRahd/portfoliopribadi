@@ -83,6 +83,7 @@ export const articles = pgTable("articles", {
   category: text("category").notNull(),
   readTime: integer("read_time").notNull(), // in minutes
   imageUrl: text("image_url"),
+  url: text("url"), // URL eksternal untuk artikel
   published: boolean("published").default(false),
   featured: boolean("featured").default(false),
   createdAt: timestamp("created_at").defaultNow(),

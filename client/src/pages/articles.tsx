@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Clock, Calendar, ExternalLink } from "lucide-react";
+import { Clock, Calendar } from "lucide-react";
 import type { Article } from "@shared/schema";
 
 function LoadingSkeleton() {
@@ -61,15 +61,6 @@ export default function Articles() {
   const featuredArticle = featuredArticles[0];
   const regularArticles = articles.filter(article => !article.featured);
 
-  const handleReadArticle = (article: Article) => {
-    if (article.url) {
-      window.open(article.url, '_blank');
-    } else {
-      // Jika tidak ada URL, bisa redirect ke halaman detail artikel internal
-      alert(`Artikel "${article.title}" akan segera tersedia!`);
-    }
-  };
-
   if (isLoading) {
     return (
       <div className="pt-24 pb-12">
@@ -114,11 +105,7 @@ export default function Articles() {
                   <Clock className="h-4 w-4 ml-4 mr-2" />
                   <span>{featuredArticle.readTime} min read</span>
                 </div>
-                <Button 
-                  className="bg-white text-primary hover:bg-white/90"
-                  onClick={() => handleReadArticle(featuredArticle)}
-                >
-                  <ExternalLink className="h-4 w-4 mr-2" />
+                <Button className="bg-white text-primary hover:bg-white/90">
                   Read Article
                 </Button>
               </div>
@@ -163,13 +150,7 @@ export default function Articles() {
                   <span className="text-sm text-muted-foreground">
                     {article.readTime} min read
                   </span>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="text-primary hover:text-primary/80"
-                    onClick={() => handleReadArticle(article)}
-                  >
-                    <ExternalLink className="h-4 w-4 mr-1" />
+                  <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80">
                     Read More
                   </Button>
                 </div>
@@ -181,11 +162,7 @@ export default function Articles() {
         {/* Load More Button */}
         {articles.length > 0 && (
           <div className="text-center mt-12">
-            <Button 
-              size="lg" 
-              className="bg-primary hover:bg-primary/90"
-              onClick={() => alert("Fitur Load More akan segera tersedia!")}
-            >
+            <Button size="lg" className="bg-primary hover:bg-primary/90">
               Load More Articles
             </Button>
           </div>

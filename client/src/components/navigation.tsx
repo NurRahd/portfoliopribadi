@@ -51,13 +51,18 @@ export function Navigation() {
   );
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-sm border-b border-border">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-accent/20 shadow-sm">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/" className="flex-shrink-0 flex items-center gap-2">
-            <Camera className="h-6 w-6 text-primary" />
-            <h1 className="text-xl font-bold text-primary">Alex Chen</h1>
+          <Link href="/" className="flex-shrink-0 flex items-center gap-3 group">
+            <div className="bg-primary p-2 rounded-lg group-hover:scale-110 transition-transform duration-200">
+              <Camera className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-primary leading-tight">Alex Chen</h1>
+              <p className="text-xs text-accent font-medium -mt-1">Photographer & Developer</p>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}

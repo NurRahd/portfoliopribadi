@@ -67,7 +67,7 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="py-16 bg-gradient-to-br from-primary/5 to-accent/5 dark:from-primary/10 dark:to-accent/10">
+      <section className="py-16 photography-gradient">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-8 items-center">
             <div className="animate-slide-up">
@@ -136,21 +136,21 @@ export default function Home() {
                 </div>
               </div>
               <div className="flex items-start space-x-4">
-                <div className="bg-primary/10 p-3 rounded-lg">
-                  <MapPin className="h-5 w-5 text-primary" />
+                <div className="bg-accent/20 p-3 rounded-lg border border-accent/30">
+                  <MapPin className="h-5 w-5 text-accent" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-foreground mb-1">Location</h3>
-                  <p className="text-muted-foreground">{profile?.location || "Jakarta, Indonesia"}</p>
+                  <p className="text-muted-foreground">{profile?.location || "Bali, Indonesia"}</p>
                 </div>
               </div>
               <div className="flex items-start space-x-4">
-                <div className="bg-primary/10 p-3 rounded-lg">
-                  <Briefcase className="h-5 w-5 text-primary" />
+                <div className="bg-accent/20 p-3 rounded-lg border border-accent/30">
+                  <Briefcase className="h-5 w-5 text-accent" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-foreground mb-1">Position</h3>
-                  <p className="text-muted-foreground">{profile?.position || "Senior Full Stack Developer"}</p>
+                  <p className="text-muted-foreground">{profile?.position || "Professional Photographer & IT Developer"}</p>
                 </div>
               </div>
             </div>
@@ -194,23 +194,23 @@ export default function Home() {
               {skills.map((skill) => {
                 const config = getSkillCategoryConfig(skill.category);
                 return (
-                  <Card key={skill.id} className="hover:shadow-md transition-shadow duration-300">
+                  <Card key={skill.id} className="hover:shadow-lg hover:scale-105 transition-all duration-300 border-accent/20">
                     <CardContent className="p-6">
                       <div className="mb-4">
-                        <div className={`bg-${config.color}-100 dark:bg-${config.color}-900/20 p-3 rounded-lg w-fit`}>
-                          <i className={`${config.icon} text-${config.color}-600 text-xl`} />
+                        <div className="bg-accent/10 border border-accent/30 p-3 rounded-lg w-fit">
+                          <i className={`${config.icon} text-accent text-xl`} />
                         </div>
                       </div>
                       <h3 className="font-semibold text-foreground mb-2">{skill.name}</h3>
                       <p className="text-muted-foreground text-sm mb-4">{skill.description}</p>
                       <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>{skill.name}</span>
-                          <span>{skill.proficiency}%</span>
+                        <div className="flex justify-between text-sm font-medium">
+                          <span className="text-foreground">{skill.category}</span>
+                          <span className="text-accent">{skill.proficiency}%</span>
                         </div>
-                        <div className="bg-muted rounded-full h-2">
+                        <div className="bg-muted rounded-full h-3 overflow-hidden">
                           <div 
-                            className={`bg-${config.color}-600 h-2 rounded-full transition-all duration-300`}
+                            className="bg-gradient-to-r from-accent to-primary h-3 rounded-full transition-all duration-500 ease-out"
                             style={{ width: `${skill.proficiency}%` }}
                           />
                         </div>

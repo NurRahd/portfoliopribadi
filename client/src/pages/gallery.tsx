@@ -16,22 +16,22 @@ function LoadingSkeleton() {
 
 function GalleryCard({ gallery }: { gallery: Gallery }) {
   return (
-    <div className="group relative overflow-hidden rounded-lg bg-background shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+    <div className="group relative overflow-hidden rounded-xl bg-card border border-accent/20 shadow-md hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 hover:rotate-1">
       <div className="aspect-[4/5] overflow-hidden">
         <img
           src={gallery.imageUrl}
           alt={gallery.title}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
-          <div className="p-6 text-white">
-            <h3 className="text-xl font-semibold mb-2">{gallery.title}</h3>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end">
+          <div className="p-6 text-white w-full">
+            <h3 className="text-xl font-bold mb-2 text-cream-100">{gallery.title}</h3>
             {gallery.description && (
-              <p className="text-sm text-gray-200 mb-3">{gallery.description}</p>
+              <p className="text-sm text-cream-200 mb-3 line-clamp-2">{gallery.description}</p>
             )}
             <div className="flex flex-wrap gap-2">
               {gallery.tags?.map((tag, index) => (
-                <Badge key={index} variant="secondary" className="text-xs">
+                <Badge key={index} className="bg-accent/20 text-accent-foreground border border-accent/40 text-xs">
                   {tag}
                 </Badge>
               ))}
@@ -40,8 +40,8 @@ function GalleryCard({ gallery }: { gallery: Gallery }) {
         </div>
       </div>
       {gallery.featured && (
-        <div className="absolute top-4 right-4 bg-primary text-primary-foreground px-2 py-1 rounded text-xs font-medium">
-          Featured
+        <div className="absolute top-4 right-4 bg-accent text-accent-foreground px-3 py-1.5 rounded-full text-xs font-bold shadow-lg">
+          ⭐ Featured
         </div>
       )}
     </div>

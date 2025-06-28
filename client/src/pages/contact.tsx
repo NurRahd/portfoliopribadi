@@ -1,285 +1,234 @@
 import { useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { 
-  Mail, Phone, MapPin, ExternalLink,
-  Lightbulb, Handshake, Star, Leaf,
-  Linkedin, Github, Twitter, Instagram, Youtube
-} from "lucide-react";
-import type { Profile, InsertContactMessage } from "@shared/schema";
+import { MapPin, Phone, Mail, Clock, Instagram, Dribbble, Linkedin, Twitter, Youtube } from "lucide-react";
 
 const contactFormSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  email: z.string().email("Please enter a valid email"),
-  subject: z.string().min(1, "Subject is required"),
+  fullName: z.string().min(2, "Full name must be at least 2 characters"),
+  email: z.string().email("Please enter a valid email address"),
+  subject: z.string().min(5, "Subject must be at least 5 characters"),
   message: z.string().min(10, "Message must be at least 10 characters"),
 });
 
 type ContactFormData = z.infer<typeof contactFormSchema>;
 
-const values = [
-  {
-    icon: Lightbulb,
-    title: "Innovation",
-    description: "Always exploring new technologies and creative solutions to push boundaries.",
-  },
-  {
-    icon: Handshake,
-    title: "Collaboration",
-    description: "Believing in the power of teamwork and open communication for success.",
-  },
-  {
-    icon: Star,
-    title: "Excellence",
-    description: "Committed to delivering high-quality work that exceeds expectations.",
-  },
-  {
-    icon: Leaf,
-    title: "Growth",
-    description: "Continuous learning and adaptation to evolving technology landscapes.",
-  },
-];
-
-const socialLinks = [
-  { icon: Linkedin, href: "#", label: "LinkedIn", color: "blue" },
-  { icon: Github, href: "#", label: "GitHub", color: "slate" },
-  { icon: Twitter, href: "#", label: "Twitter", color: "blue" },
-  { icon: Instagram, href: "#", label: "Instagram", color: "pink" },
-  { icon: Youtube, href: "#", label: "YouTube", color: "red" },
-];
-
 export default function Contact() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { data: profile } = useQuery<Profile>({
-    queryKey: ["/api/profile"],
-  });
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<ContactFormData>({
+  const form = useForm<ContactFormData>({
     resolver: zodResolver(contactFormSchema),
+    defaultValues: {
+      fullName: "",
+      email: "",
+      subject: "",
+      message: "",
+    },
   });
 
-  const contactMutation = useMutation({
+  const mutation = useMutation({
     mutationFn: async (data: ContactFormData) => {
-      const response = await apiRequest("POST", "/api/contact-messages", data);
-      return response.json();
+      return await apiRequest("/api/contact-messages", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
     },
     onSuccess: () => {
       toast({
-        title: "Message Sent!",
-        description: "Thank you for your message. I'll get back to you soon.",
+        title: "Message sent successfully!",
+        description: "Thank you for reaching out. I'll get back to you soon.",
       });
-      reset();
+      form.reset();
       queryClient.invalidateQueries({ queryKey: ["/api/contact-messages"] });
     },
-    onError: () => {
+    onError: (error) => {
       toast({
-        title: "Error",
-        description: "Failed to send message. Please try again.",
+        title: "Failed to send message",
+        description: "Please try again later.",
         variant: "destructive",
       });
     },
   });
 
   const onSubmit = async (data: ContactFormData) => {
-    setIsSubmitting(true);
-    try {
-      await contactMutation.mutateAsync(data);
-    } finally {
-      setIsSubmitting(false);
-    }
+    mutation.mutate(data);
   };
 
   return (
-    <div className="pt-24 pb-12">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-foreground mb-4">Get In Touch</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Let's connect and discuss how we can work together on your next project
-          </p>
-        </div>
+    <div className="min-h-screen bg-[#0D0D0D] text-white">
+      <div className="pt-24 pb-16 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+            {/* Contact Form */}
+            <div className="bg-[#1A1A1A] p-8 rounded-lg border border-[#333]">
+              <h2 className="text-3xl font-['Playfair_Display'] font-bold text-[#DCC6AA] mb-8">Send a Message</h2>
+              
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-[#DCC6AA] mb-2">
+                    Full Name
+                  </label>
+                  <Input
+                    {...form.register("fullName")}
+                    placeholder="Enter your name"
+                    className="bg-[#0D0D0D] border-[#333] text-white placeholder:text-gray-500 focus:border-[#DCC6AA]"
+                  />
+                  {form.formState.errors.fullName && (
+                    <p className="text-red-400 text-sm mt-1">{form.formState.errors.fullName.message}</p>
+                  )}
+                </div>
 
-        <div className="grid lg:grid-cols-2 gap-12">
-          {/* Contact Information */}
-          <div>
-            <h2 className="text-2xl font-bold text-foreground mb-6">Contact Information</h2>
-            
-            {/* Contact Details */}
-            <div className="space-y-6 mb-8">
-              <div className="flex items-center space-x-4">
-                <div className="bg-primary/10 p-3 rounded-lg">
-                  <Mail className="h-5 w-5 text-primary" />
-                </div>
                 <div>
-                  <h3 className="font-semibold text-foreground">Email</h3>
-                  <p className="text-muted-foreground">{profile?.email || "john.doe@example.com"}</p>
+                  <label className="block text-sm font-medium text-[#DCC6AA] mb-2">
+                    Email Address
+                  </label>
+                  <Input
+                    {...form.register("email")}
+                    type="email"
+                    placeholder="Enter your email"
+                    className="bg-[#0D0D0D] border-[#333] text-white placeholder:text-gray-500 focus:border-[#DCC6AA]"
+                  />
+                  {form.formState.errors.email && (
+                    <p className="text-red-400 text-sm mt-1">{form.formState.errors.email.message}</p>
+                  )}
                 </div>
-              </div>
-              <div className="flex items-center space-x-4">
-                <div className="bg-primary/10 p-3 rounded-lg">
-                  <Phone className="h-5 w-5 text-primary" />
-                </div>
+
                 <div>
-                  <h3 className="font-semibold text-foreground">Phone</h3>
-                  <p className="text-muted-foreground">{profile?.phone || "+62 812-3456-7890"}</p>
+                  <label className="block text-sm font-medium text-[#DCC6AA] mb-2">
+                    Subject
+                  </label>
+                  <Input
+                    {...form.register("subject")}
+                    placeholder="Enter your subject"
+                    className="bg-[#0D0D0D] border-[#333] text-white placeholder:text-gray-500 focus:border-[#DCC6AA]"
+                  />
+                  {form.formState.errors.subject && (
+                    <p className="text-red-400 text-sm mt-1">{form.formState.errors.subject.message}</p>
+                  )}
                 </div>
-              </div>
-              <div className="flex items-center space-x-4">
-                <div className="bg-primary/10 p-3 rounded-lg">
-                  <MapPin className="h-5 w-5 text-primary" />
-                </div>
+
                 <div>
-                  <h3 className="font-semibold text-foreground">Location</h3>
-                  <p className="text-muted-foreground">{profile?.location || "Jakarta, Indonesia"}</p>
+                  <label className="block text-sm font-medium text-[#DCC6AA] mb-2">
+                    Your Message
+                  </label>
+                  <Textarea
+                    {...form.register("message")}
+                    placeholder="Type your message here..."
+                    rows={6}
+                    className="bg-[#0D0D0D] border-[#333] text-white placeholder:text-gray-500 focus:border-[#DCC6AA] resize-none"
+                  />
+                  {form.formState.errors.message && (
+                    <p className="text-red-400 text-sm mt-1">{form.formState.errors.message.message}</p>
+                  )}
                 </div>
-              </div>
+
+                <Button
+                  type="submit"
+                  disabled={mutation.isPending}
+                  className="w-full bg-[#DCC6AA] hover:bg-[#A08B72] text-[#0D0D0D] font-semibold py-3 transition-all duration-300"
+                >
+                  {mutation.isPending ? "Sending..." : "SEND MESSAGE"}
+                </Button>
+              </form>
             </div>
 
-            {/* Social Media */}
-            <div className="mb-8">
-              <h3 className="text-xl font-bold text-foreground mb-4">Follow Me</h3>
-              <div className="flex space-x-4">
-                {socialLinks.map((social) => {
-                  const Icon = social.icon;
-                  return (
-                    <Button
-                      key={social.label}
-                      size="icon"
-                      className={`bg-${social.color}-600 hover:bg-${social.color}-700 text-white`}
-                      asChild
-                    >
-                      <a href={social.href} target="_blank" rel="noopener noreferrer">
-                        <Icon className="h-4 w-4" />
-                      </a>
-                    </Button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Values Section */}
-            <div>
-              <h3 className="text-xl font-bold text-foreground mb-6">My Values</h3>
-              <div className="space-y-4">
-                {values.map((value) => {
-                  const Icon = value.icon;
-                  return (
-                    <div key={value.title} className="flex items-start space-x-3">
-                      <div className="bg-primary/10 p-2 rounded-lg mt-1">
-                        <Icon className="h-4 w-4 text-primary" />
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-foreground">{value.title}</h4>
-                        <p className="text-muted-foreground text-sm">{value.description}</p>
-                      </div>
+            {/* Contact Information */}
+            <div className="space-y-8">
+              <div className="bg-[#1A1A1A] p-8 rounded-lg border border-[#333]">
+                <h3 className="text-2xl font-['Playfair_Display'] font-bold text-[#DCC6AA] mb-6">Contact Information</h3>
+                
+                <div className="space-y-6">
+                  <div className="flex items-start space-x-4">
+                    <div className="w-6 h-6 text-[#DCC6AA] flex-shrink-0 mt-1">
+                      <MapPin size={20} />
                     </div>
-                  );
-                })}
+                    <div>
+                      <h4 className="font-semibold text-white mb-1">Location</h4>
+                      <p className="text-gray-300 text-sm">123 Photography Street, Bali, Indonesia 70210</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-4">
+                    <div className="w-6 h-6 text-[#DCC6AA] flex-shrink-0 mt-1">
+                      <Phone size={20} />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-white mb-1">Phone</h4>
+                      <p className="text-gray-300 text-sm">+62 (813) 567-8910</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-4">
+                    <div className="w-6 h-6 text-[#DCC6AA] flex-shrink-0 mt-1">
+                      <Mail size={20} />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-white mb-1">Email</h4>
+                      <p className="text-gray-300 text-sm">contact@alexchen.com</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-4">
+                    <div className="w-6 h-6 text-[#DCC6AA] flex-shrink-0 mt-1">
+                      <Clock size={20} />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-white mb-1">Working Hours</h4>
+                      <p className="text-gray-300 text-sm">Monday-Friday: 9AM - 6PM</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Connect With Me */}
+              <div className="bg-[#1A1A1A] p-8 rounded-lg border border-[#333]">
+                <h3 className="text-2xl font-['Playfair_Display'] font-bold text-[#DCC6AA] mb-4">Connect With Me</h3>
+                <p className="text-gray-300 text-sm mb-6">
+                  Follow my work and get behind the scenes insights into 
+                  my creative process. Join the conversation on social media!
+                </p>
+
+                <div className="grid grid-cols-3 gap-4">
+                  <a href="#" className="flex items-center justify-center p-3 bg-[#0D0D0D] rounded-lg border border-[#333] hover:border-[#DCC6AA] transition-all duration-300 group">
+                    <Instagram size={20} className="text-[#DCC6AA] group-hover:scale-110 transition-transform" />
+                  </a>
+                  <a href="#" className="flex items-center justify-center p-3 bg-[#0D0D0D] rounded-lg border border-[#333] hover:border-[#DCC6AA] transition-all duration-300 group">
+                    <Dribbble size={20} className="text-[#DCC6AA] group-hover:scale-110 transition-transform" />
+                  </a>
+                  <a href="#" className="flex items-center justify-center p-3 bg-[#0D0D0D] rounded-lg border border-[#333] hover:border-[#DCC6AA] transition-all duration-300 group">
+                    <Mail size={20} className="text-[#DCC6AA] group-hover:scale-110 transition-transform" />
+                  </a>
+                  <a href="#" className="flex items-center justify-center p-3 bg-[#0D0D0D] rounded-lg border border-[#333] hover:border-[#DCC6AA] transition-all duration-300 group">
+                    <Linkedin size={20} className="text-[#DCC6AA] group-hover:scale-110 transition-transform" />
+                  </a>
+                  <a href="#" className="flex items-center justify-center p-3 bg-[#0D0D0D] rounded-lg border border-[#333] hover:border-[#DCC6AA] transition-all duration-300 group">
+                    <Twitter size={20} className="text-[#DCC6AA] group-hover:scale-110 transition-transform" />
+                  </a>
+                  <a href="#" className="flex items-center justify-center p-3 bg-[#0D0D0D] rounded-lg border border-[#333] hover:border-[#DCC6AA] transition-all duration-300 group">
+                    <Youtube size={20} className="text-[#DCC6AA] group-hover:scale-110 transition-transform" />
+                  </a>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Contact Form */}
-          <Card>
-            <CardContent className="p-8">
-              <h2 className="text-2xl font-bold text-foreground mb-6">Send Message</h2>
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="firstName">First Name</Label>
-                    <Input
-                      id="firstName"
-                      {...register("firstName")}
-                      className="mt-2"
-                    />
-                    {errors.firstName && (
-                      <p className="text-sm text-destructive mt-1">{errors.firstName.message}</p>
-                    )}
-                  </div>
-                  <div>
-                    <Label htmlFor="lastName">Last Name</Label>
-                    <Input
-                      id="lastName"
-                      {...register("lastName")}
-                      className="mt-2"
-                    />
-                    {errors.lastName && (
-                      <p className="text-sm text-destructive mt-1">{errors.lastName.message}</p>
-                    )}
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    {...register("email")}
-                    className="mt-2"
-                  />
-                  {errors.email && (
-                    <p className="text-sm text-destructive mt-1">{errors.email.message}</p>
-                  )}
-                </div>
-                <div>
-                  <Label htmlFor="subject">Subject</Label>
-                  <Input
-                    id="subject"
-                    {...register("subject")}
-                    className="mt-2"
-                  />
-                  {errors.subject && (
-                    <p className="text-sm text-destructive mt-1">{errors.subject.message}</p>
-                  )}
-                </div>
-                <div>
-                  <Label htmlFor="message">Message</Label>
-                  <Textarea
-                    id="message"
-                    rows={5}
-                    {...register("message")}
-                    className="mt-2 resize-none"
-                  />
-                  {errors.message && (
-                    <p className="text-sm text-destructive mt-1">{errors.message.message}</p>
-                  )}
-                </div>
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={isSubmitting || contactMutation.isPending}
-                >
-                  {isSubmitting || contactMutation.isPending ? (
-                    <div className="loading-dots">
-                      <div></div>
-                      <div></div>
-                      <div></div>
-                      <div></div>
-                    </div>
-                  ) : (
-                    "Send Message"
-                  )}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+          {/* Value Section */}
+          <div className="mt-20 text-center">
+            <div className="bg-[#1A1A1A] p-12 rounded-lg border border-[#333]">
+              <h2 className="text-4xl font-['Playfair_Display'] font-bold text-[#DCC6AA] mb-4">Value</h2>
+              <div className="text-6xl font-bold text-[#DCC6AA] mb-4">$400</div>
+              <p className="text-gray-300 max-w-2xl mx-auto">
+                I turn ideas into websites clear, responsive, and uniquely yours.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

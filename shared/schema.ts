@@ -74,6 +74,28 @@ export const activities = pgTable("activities", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const galleries = pgTable("galleries", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description"),
+  imageUrl: text("image_url").notNull(),
+  category: text("category").notNull(), // portrait, landscape, event, commercial, etc.
+  featured: boolean("featured").default(false),
+  tags: text("tags").array(), // array of tags for searching
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const services = pgTable("services", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  icon: text("icon").notNull(),
+  category: text("category").notNull(), // photography, development
+  price: text("price"),
+  features: text("features").array(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const articles = pgTable("articles", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
@@ -144,6 +166,16 @@ export const insertContactMessageSchema = createInsertSchema(contactMessages).om
   createdAt: true,
 });
 
+export const insertGallerySchema = createInsertSchema(galleries).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertServiceSchema = createInsertSchema(services).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -171,6 +203,12 @@ export type InsertArticle = z.infer<typeof insertArticleSchema>;
 
 export type ContactMessage = typeof contactMessages.$inferSelect;
 export type InsertContactMessage = z.infer<typeof insertContactMessageSchema>;
+
+export type Gallery = typeof galleries.$inferSelect;
+export type InsertGallery = z.infer<typeof insertGallerySchema>;
+
+export type Service = typeof services.$inferSelect;
+export type InsertService = z.infer<typeof insertServiceSchema>;
 
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,

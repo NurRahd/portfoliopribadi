@@ -1,8 +1,10 @@
-# Portfolio Website
+# Photography & IT Development Portfolio Website
 
 ## Overview
 
-This is a modern full-stack portfolio website built with React, Express, and PostgreSQL. The application features a responsive design with a clean, professional interface for showcasing personal information, skills, experience, education, and articles. It includes both public-facing portfolio pages and an admin interface for content management.
+This is a modern full-stack portfolio website built with React, Express, and PostgreSQL, specifically designed for a professional photographer and IT developer. The application features a responsive design with a clean, professional interface for showcasing photography work, development skills, services, and articles. It includes both public-facing portfolio pages and an admin interface for content management.
+
+The website serves Alex Chen, a professional photographer and IT developer based in Bali, Indonesia, who combines creative photography skills with technical development expertise.
 
 ## System Architecture
 
@@ -25,25 +27,31 @@ This is a modern full-stack portfolio website built with React, Express, and Pos
 The application uses PostgreSQL with the following main entities:
 - **Users**: Authentication and user management
 - **Profile**: Personal information and social links
-- **Skills**: Technical skills with categories and proficiency levels
-- **Experiences**: Work experience with technologies used
+- **Skills**: Photography and development skills with categories and proficiency levels
+- **Experiences**: Work experience combining photography and development projects
 - **Education**: Educational background
 - **Certifications**: Professional certifications
 - **Activities**: Personal activities and interests
-- **Articles**: Blog posts and articles
+- **Articles**: Blog posts and articles about photography and development
 - **Contact Messages**: Visitor contact form submissions
+- **Galleries**: Photography portfolio with categories (portrait, landscape, event, commercial)
+- **Services**: Photography and development services with pricing and features
 
 ## Key Components
 
 ### Public Pages
-- **Home**: Hero section with profile information, skills showcase, experience timeline
+- **Home**: Hero section with photographer/developer profile, skills showcase, experience timeline
+- **Gallery**: Photography portfolio with category filtering (portrait, landscape, event, commercial) and featured works
+- **Services**: Photography and development services showcase with pricing and features
 - **Articles**: Blog/article listing with categories and search functionality
 - **Contact**: Contact form with validation and personal values display
-- **Navigation**: Responsive navigation with dark/light theme toggle
+- **Navigation**: Responsive navigation with camera logo and dark/light theme toggle
 
 ### Admin Interface
 - **Profile Management**: Edit personal information and social links
 - **Content Management**: CRUD operations for skills, experiences, education, certifications
+- **Gallery Management**: Add, edit, and organize photography portfolio with category filtering
+- **Services Management**: Manage photography and development service offerings
 - **Article Management**: Create and edit blog posts with rich text capabilities
 - **Data Tables**: Responsive tables for managing different content types
 
@@ -107,6 +115,16 @@ The application uses PostgreSQL with the following main entities:
 
 ```
 Changelog:
+- June 28, 2025. Major theme transformation to Photography & IT Development portfolio
+  - Added Gallery system with categories (portrait, landscape, event, commercial)
+  - Added Services system for photography and development offerings
+  - Updated database schema with galleries and services tables
+  - Created Gallery page with category filtering and featured works
+  - Created Services page with photography and development service showcase
+  - Updated navigation with camera logo and new menu items
+  - Transformed profile data to Alex Chen (Photographer & Developer)
+  - Updated hero section to reflect dual expertise
+  - Added API endpoints for galleries and services management
 - June 21, 2025. Initial setup
 ```
 

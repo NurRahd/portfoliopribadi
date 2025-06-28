@@ -1,9 +1,10 @@
 import { 
-  users, profile, skills, experiences, education, certifications, activities, articles, contactMessages,
+  users, profile, skills, experiences, education, certifications, activities, articles, contactMessages, galleries, services,
   type User, type InsertUser, type Profile, type InsertProfile, type Skill, type InsertSkill,
   type Experience, type InsertExperience, type Education, type InsertEducation,
   type Certification, type InsertCertification, type Activity, type InsertActivity,
-  type Article, type InsertArticle, type ContactMessage, type InsertContactMessage
+  type Article, type InsertArticle, type ContactMessage, type InsertContactMessage,
+  type Gallery, type InsertGallery, type Service, type InsertService
 } from "@shared/schema";
 
 export interface IStorage {
@@ -60,6 +61,21 @@ export interface IStorage {
   createContactMessage(message: InsertContactMessage): Promise<ContactMessage>;
   markMessageAsRead(id: number): Promise<boolean>;
   deleteContactMessage(id: number): Promise<boolean>;
+
+  // Gallery methods
+  getGalleries(): Promise<Gallery[]>;
+  getGalleriesByCategory(category: string): Promise<Gallery[]>;
+  getFeaturedGalleries(): Promise<Gallery[]>;
+  createGallery(gallery: InsertGallery): Promise<Gallery>;
+  updateGallery(id: number, gallery: Partial<InsertGallery>): Promise<Gallery | undefined>;
+  deleteGallery(id: number): Promise<boolean>;
+
+  // Service methods
+  getServices(): Promise<Service[]>;
+  getServicesByCategory(category: string): Promise<Service[]>;
+  createService(service: InsertService): Promise<Service>;
+  updateService(id: number, service: Partial<InsertService>): Promise<Service | undefined>;
+  deleteService(id: number): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -72,6 +88,8 @@ export class MemStorage implements IStorage {
   private activities: Map<number, Activity> = new Map();
   private articles: Map<number, Article> = new Map();
   private contactMessages: Map<number, ContactMessage> = new Map();
+  private galleries: Map<number, Gallery> = new Map();
+  private services: Map<number, Service> = new Map();
   
   private currentUserId = 1;
   private currentProfileId = 1;
@@ -82,6 +100,8 @@ export class MemStorage implements IStorage {
   private currentActivityId = 1;
   private currentArticleId = 1;
   private currentContactMessageId = 1;
+  private currentGalleryId = 1;
+  private currentServiceId = 1;
 
   constructor() {
     this.seedData();
@@ -91,18 +111,18 @@ export class MemStorage implements IStorage {
     // Seed profile
     const profileData: Profile = {
       id: 1,
-      fullName: "John Doe Developer",
-      position: "Senior Full Stack Developer",
-      email: "john.doe@example.com",
+      fullName: "Alex Chen",
+      position: "Professional Photographer & IT Developer",
+      email: "alex.chen@photodev.com",
       phone: "+62 812-3456-7890",
-      location: "Jakarta, Indonesia",
-      bio: "I am a passionate developer with over 5 years of experience creating modern web applications. I love solving complex problems and turning creative ideas into functional, beautiful digital solutions. My approach combines technical expertise with user-centered design principles to deliver exceptional results.",
-      age: 28,
-      linkedinUrl: "https://linkedin.com/in/johndoe",
-      githubUrl: "https://github.com/johndoe",
-      twitterUrl: "https://twitter.com/johndoe",
-      instagramUrl: "https://instagram.com/johndoe",
-      youtubeUrl: "https://youtube.com/@johndoe",
+      location: "Bali, Indonesia",
+      bio: "Saya adalah fotografer profesional dengan passion di bidang teknologi. Dengan pengalaman 6+ tahun dalam fotografi dan 4+ tahun dalam pengembangan web, saya menggabungkan kreativitas visual dengan keahlian teknis untuk menciptakan solusi digital yang memukau. Spesialisasi saya meliputi portrait photography, landscape, dan event photography, serta pengembangan aplikasi web modern.",
+      age: 29,
+      linkedinUrl: "https://linkedin.com/in/alexchen",
+      githubUrl: "https://github.com/alexchen",
+      twitterUrl: "https://twitter.com/alexchen_photo",
+      instagramUrl: "https://instagram.com/alexchen.photo",
+      youtubeUrl: "https://youtube.com/@alexchenphoto",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -110,12 +130,14 @@ export class MemStorage implements IStorage {
 
     // Seed skills
     const skillsData: Skill[] = [
-      { id: 1, name: "React.js", category: "Frontend Development", proficiency: 90, description: "HTML5, CSS3, JavaScript, React, Vue.js", createdAt: new Date() },
-      { id: 2, name: "Node.js", category: "Backend Development", proficiency: 85, description: "Node.js, Python, PHP, MongoDB, MySQL", createdAt: new Date() },
-      { id: 3, name: "Figma", category: "UI/UX Design", proficiency: 80, description: "Figma, Adobe XD, Sketch, Photoshop", createdAt: new Date() },
-      { id: 4, name: "AWS", category: "DevOps & Cloud", proficiency: 75, description: "AWS, Docker, Git, CI/CD", createdAt: new Date() },
-      { id: 5, name: "React Native", category: "Mobile Development", proficiency: 70, description: "React Native, Flutter, iOS, Android", createdAt: new Date() },
-      { id: 6, name: "Team Leadership", category: "Soft Skills", proficiency: 85, description: "Leadership, Communication, Problem Solving", createdAt: new Date() },
+      { id: 1, name: "Portrait Photography", category: "Photography", proficiency: 95, description: "Studio lighting, natural light, posing direction", createdAt: new Date() },
+      { id: 2, name: "Landscape Photography", category: "Photography", proficiency: 90, description: "Golden hour, long exposure, composition", createdAt: new Date() },
+      { id: 3, name: "Photo Editing", category: "Photography", proficiency: 92, description: "Adobe Lightroom, Photoshop, color grading", createdAt: new Date() },
+      { id: 4, name: "React.js", category: "Frontend Development", proficiency: 85, description: "Modern React, TypeScript, responsive design", createdAt: new Date() },
+      { id: 5, name: "Node.js", category: "Backend Development", proficiency: 80, description: "Express.js, API development, database integration", createdAt: new Date() },
+      { id: 6, name: "Event Photography", category: "Photography", proficiency: 88, description: "Wedding, corporate events, candid moments", createdAt: new Date() },
+      { id: 7, name: "UI/UX Design", category: "Design", proficiency: 75, description: "Figma, user-centered design, wireframing", createdAt: new Date() },
+      { id: 8, name: "Commercial Photography", category: "Photography", proficiency: 85, description: "Product photography, brand imagery, marketing content", createdAt: new Date() },
     ];
     skillsData.forEach(skill => this.skills.set(skill.id, skill));
     this.currentSkillId = 7;
@@ -124,32 +146,32 @@ export class MemStorage implements IStorage {
     const experiencesData: Experience[] = [
       {
         id: 1,
-        title: "Senior Full Stack Developer",
-        company: "TechCorp Indonesia",
+        title: "Professional Photographer & Full Stack Developer",
+        company: "Freelance",
         startDate: "2022",
         endDate: null,
-        description: "Leading a team of 5 developers in building scalable web applications. Responsible for architecture decisions, code reviews, and mentoring junior developers. Successfully delivered 15+ projects with 99% client satisfaction.",
-        technologies: ["React", "Node.js", "AWS", "MongoDB"],
+        description: "Menjalankan bisnis fotografi profesional sambil mengembangkan aplikasi web custom untuk klien. Melayani 50+ klien fotografi dan menyelesaikan 20+ proyek web development. Mengkhususkan diri pada portrait, landscape, dan event photography.",
+        technologies: ["Photography", "React", "Node.js", "MongoDB"],
         createdAt: new Date()
       },
       {
         id: 2,
-        title: "Frontend Developer",
-        company: "Digital Agency XYZ",
+        title: "Lead Photographer",
+        company: "Bali Wedding Studio",
         startDate: "2020",
         endDate: "2022",
-        description: "Developed responsive web applications for various clients. Collaborated with designers and backend developers to create seamless user experiences. Improved website performance by 40% through optimization techniques.",
-        technologies: ["Vue.js", "JavaScript", "SASS"],
+        description: "Memimpin tim fotografer untuk wedding dan event besar. Menangani 100+ wedding shoots dengan rating kepuasan klien 98%. Mengembangkan sistem booking online untuk studio menggunakan React dan Express.",
+        technologies: ["Wedding Photography", "Event Photography", "React", "Express.js"],
         createdAt: new Date()
       },
       {
         id: 3,
-        title: "Junior Web Developer",
-        company: "Startup InnovateID",
+        title: "Web Developer & Photo Editor",
+        company: "Creative Digital Agency",
         startDate: "2019",
         endDate: "2020",
-        description: "Started my professional journey building web applications from scratch. Learned best practices in coding, version control, and agile development methodologies. Contributed to the company's main product launch.",
-        technologies: ["PHP", "MySQL", "jQuery"],
+        description: "Menggabungkan keahlian programming dan photo editing. Mengembangkan website portfolio untuk fotografer dan melakukan post-processing untuk konten marketing. Meningkatkan workflow editing hingga 60% lebih efisien.",
+        technologies: ["JavaScript", "Photoshop", "Lightroom", "WordPress"],
         createdAt: new Date()
       }
     ];
@@ -240,6 +262,138 @@ export class MemStorage implements IStorage {
     ];
     articlesData.forEach(article => this.articles.set(article.id, article));
     this.currentArticleId = 4;
+
+    // Seed galleries
+    const galleriesData: Gallery[] = [
+      {
+        id: 1,
+        title: "Golden Hour Portrait Session",
+        description: "Intimate portrait session during golden hour with natural lighting",
+        imageUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=1000",
+        category: "portrait",
+        featured: true,
+        tags: ["portrait", "golden hour", "natural light"],
+        createdAt: new Date()
+      },
+      {
+        id: 2,
+        title: "Bali Rice Terrace Landscape",
+        description: "Stunning sunrise over the iconic Jatiluwih rice terraces in Bali",
+        imageUrl: "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+        category: "landscape",
+        featured: true,
+        tags: ["landscape", "bali", "rice terrace", "sunrise"],
+        createdAt: new Date()
+      },
+      {
+        id: 3,
+        title: "Wedding Ceremony Moment",
+        description: "Emotional wedding ceremony capture with perfect timing",
+        imageUrl: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+        category: "event",
+        featured: false,
+        tags: ["wedding", "ceremony", "emotion"],
+        createdAt: new Date()
+      },
+      {
+        id: 4,
+        title: "Product Photography Setup",
+        description: "Commercial product photography with professional lighting setup",
+        imageUrl: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+        category: "commercial",
+        featured: false,
+        tags: ["product", "commercial", "studio"],
+        createdAt: new Date()
+      },
+      {
+        id: 5,
+        title: "Couple Beach Session",
+        description: "Romantic beach engagement session at sunset",
+        imageUrl: "https://images.unsplash.com/photo-1529903106fce-89f48aea7dd5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+        category: "portrait",
+        featured: false,
+        tags: ["couple", "beach", "engagement", "sunset"],
+        createdAt: new Date()
+      },
+      {
+        id: 6,
+        title: "Mountain Vista",
+        description: "Dramatic mountain landscape with morning mist",
+        imageUrl: "https://images.unsplash.com/photo-1464822759844-d150ad6d1dff?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600",
+        category: "landscape",
+        featured: false,
+        tags: ["mountain", "mist", "dramatic", "morning"],
+        createdAt: new Date()
+      }
+    ];
+    galleriesData.forEach(gallery => this.galleries.set(gallery.id, gallery));
+    this.currentGalleryId = 7;
+
+    // Seed services
+    const servicesData: Service[] = [
+      {
+        id: 1,
+        title: "Portrait Photography",
+        description: "Professional portrait sessions for individuals, families, and couples",
+        icon: "fas fa-user-circle",
+        category: "photography",
+        price: "Starting from Rp 1,500,000",
+        features: ["2-3 hour session", "50+ edited photos", "Online gallery", "Print release"],
+        createdAt: new Date()
+      },
+      {
+        id: 2,
+        title: "Wedding Photography",
+        description: "Complete wedding day coverage with artistic storytelling approach",
+        icon: "fas fa-heart",
+        category: "photography", 
+        price: "Starting from Rp 8,000,000",
+        features: ["8-12 hour coverage", "500+ edited photos", "Online gallery", "Wedding album", "Engagement session"],
+        createdAt: new Date()
+      },
+      {
+        id: 3,
+        title: "Event Photography",
+        description: "Corporate events, parties, and special occasions documentation",
+        icon: "fas fa-calendar-alt",
+        category: "photography",
+        price: "Starting from Rp 2,500,000",
+        features: ["4-8 hour coverage", "100+ edited photos", "Same day preview", "Online gallery"],
+        createdAt: new Date()
+      },
+      {
+        id: 4,
+        title: "Commercial Photography",
+        description: "Product, brand, and marketing photography for businesses",
+        icon: "fas fa-briefcase",
+        category: "photography",
+        price: "Starting from Rp 3,000,000",
+        features: ["Studio or location", "Professional lighting", "Post-processing", "Commercial license"],
+        createdAt: new Date()
+      },
+      {
+        id: 5,
+        title: "Custom Web Development",
+        description: "Full-stack web application development tailored to your needs",
+        icon: "fas fa-code",
+        category: "development",
+        price: "Starting from Rp 15,000,000",
+        features: ["Modern React/Next.js", "Responsive design", "Database integration", "SEO optimization", "6 months support"],
+        createdAt: new Date()
+      },
+      {
+        id: 6,
+        title: "Photography Portfolio Website",
+        description: "Custom portfolio websites designed specifically for photographers",
+        icon: "fas fa-camera",
+        category: "development",
+        price: "Starting from Rp 8,000,000",
+        features: ["Gallery management", "Client portal", "Booking system", "Mobile optimized", "SEO ready"],
+        createdAt: new Date()
+      }
+    ];
+    servicesData.forEach(service => this.services.set(service.id, service));
+    this.currentServiceId = 7;
   }
 
   // User methods
@@ -498,6 +652,88 @@ export class MemStorage implements IStorage {
 
   async deleteContactMessage(id: number): Promise<boolean> {
     return this.contactMessages.delete(id);
+  }
+
+  // Gallery methods
+  async getGalleries(): Promise<Gallery[]> {
+    return Array.from(this.galleries.values()).sort((a, b) => 
+      new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
+    );
+  }
+
+  async getGalleriesByCategory(category: string): Promise<Gallery[]> {
+    return Array.from(this.galleries.values())
+      .filter(gallery => gallery.category === category)
+      .sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime());
+  }
+
+  async getFeaturedGalleries(): Promise<Gallery[]> {
+    return Array.from(this.galleries.values())
+      .filter(gallery => gallery.featured === true)
+      .sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime());
+  }
+
+  async createGallery(gallery: InsertGallery): Promise<Gallery> {
+    const id = this.currentGalleryId++;
+    const newGallery: Gallery = { 
+      ...gallery, 
+      id, 
+      createdAt: new Date() 
+    };
+    this.galleries.set(id, newGallery);
+    return newGallery;
+  }
+
+  async updateGallery(id: number, gallery: Partial<InsertGallery>): Promise<Gallery | undefined> {
+    const existing = this.galleries.get(id);
+    if (existing) {
+      const updated = { ...existing, ...gallery };
+      this.galleries.set(id, updated);
+      return updated;
+    }
+    return undefined;
+  }
+
+  async deleteGallery(id: number): Promise<boolean> {
+    return this.galleries.delete(id);
+  }
+
+  // Service methods
+  async getServices(): Promise<Service[]> {
+    return Array.from(this.services.values()).sort((a, b) => 
+      new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
+    );
+  }
+
+  async getServicesByCategory(category: string): Promise<Service[]> {
+    return Array.from(this.services.values())
+      .filter(service => service.category === category)
+      .sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime());
+  }
+
+  async createService(service: InsertService): Promise<Service> {
+    const id = this.currentServiceId++;
+    const newService: Service = { 
+      ...service, 
+      id, 
+      createdAt: new Date() 
+    };
+    this.services.set(id, newService);
+    return newService;
+  }
+
+  async updateService(id: number, service: Partial<InsertService>): Promise<Service | undefined> {
+    const existing = this.services.get(id);
+    if (existing) {
+      const updated = { ...existing, ...service };
+      this.services.set(id, updated);
+      return updated;
+    }
+    return undefined;
+  }
+
+  async deleteService(id: number): Promise<boolean> {
+    return this.services.delete(id);
   }
 }
 

@@ -73,31 +73,32 @@ export default function Home() {
             <div className="animate-slide-up">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6">
                 Hi, Saya{" "}
-                <span className="text-primary">Developer</span> &{" "}
-                <span className="text-accent">Designer</span>
+                <span className="text-primary">Photographer</span> &{" "}
+                <span className="text-accent">Developer</span>
               </h1>
               <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-                {profile?.bio || "Passionate about creating beautiful, functional, and user-centered digital experiences. Specializing in modern web development and interactive design."}
+                {profile?.bio || "Memadukan seni fotografi dengan teknologi modern untuk menciptakan solusi kreatif dan digital yang memukau. Spesialisasi dalam portrait photography, landscape, event photography, dan pengembangan aplikasi web."}
               </p>
               <div className="flex flex-wrap gap-4">
-                <Link href="/contact">
+                <Link href="/gallery">
                   <Button size="lg" className="bg-primary hover:bg-primary/90">
-                    Get In Touch
+                    Lihat Gallery
                   </Button>
                 </Link>
-                <Button 
-                  variant="outline" 
-                  size="lg"
-                  onClick={() => document.getElementById('skillset')?.scrollIntoView({ behavior: 'smooth' })}
-                >
-                  View My Work
-                </Button>
+                <Link href="/services">
+                  <Button 
+                    variant="outline" 
+                    size="lg"
+                  >
+                    Layanan Saya
+                  </Button>
+                </Link>
               </div>
             </div>
             <div className="animate-slide-up">
               <img
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600"
-                alt="Professional developer portrait"
+                src="https://images.unsplash.com/photo-1542038784456-1ea8e2b75c4f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=1000"
+                alt="Professional photographer with camera"
                 className="rounded-2xl shadow-2xl w-full h-auto max-w-md mx-auto"
               />
             </div>

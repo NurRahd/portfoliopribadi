@@ -3,11 +3,13 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useTheme } from "@/components/theme-provider";
-import { Menu, Moon, Sun } from "lucide-react";
+import { Menu, Moon, Sun, Camera } from "lucide-react";
 
 const navItems = [
   { href: "/", label: "Home" },
-  { href: "/articles", label: "Artikel" },
+  { href: "/gallery", label: "Gallery" },
+  { href: "/services", label: "Services" },
+  { href: "/articles", label: "Articles" },
   { href: "/contact", label: "Contact" },
   { href: "/admin", label: "Admin" },
 ];
@@ -53,8 +55,9 @@ export function Navigation() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/" className="flex-shrink-0">
-            <h1 className="text-xl font-bold text-primary">Portfolio</h1>
+          <Link href="/" className="flex-shrink-0 flex items-center gap-2">
+            <Camera className="h-6 w-6 text-primary" />
+            <h1 className="text-xl font-bold text-primary">Alex Chen</h1>
           </Link>
 
           {/* Desktop Navigation */}

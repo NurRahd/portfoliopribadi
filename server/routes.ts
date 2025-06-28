@@ -4,7 +4,7 @@ import { storage } from "./storage";
 import { 
   insertProfileSchema, insertSkillSchema, insertExperienceSchema, 
   insertEducationSchema, insertCertificationSchema, insertActivitySchema, 
-  insertArticleSchema, insertContactMessageSchema 
+  insertArticleSchema, insertContactMessageSchema, insertGallerySchema, insertServiceSchema
 } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -391,6 +391,123 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     } catch (error) {
       res.status(500).json({ message: "Failed to delete message" });
+    }
+  });
+
+  // Gallery routes
+  app.get("/api/galleries", async (req, res) => {
+    try {
+      const category = req.query.category as string;
+      const featured = req.query.featured === 'true';
+      
+      let galleries;
+      if (featured) {
+        galleries = await storage.getFeaturedGalleries();
+      } else if (category) {
+        galleries = await storage.getGalleriesByCategory(category);
+      } else {
+        galleries = await storage.getGalleries();
+      }
+      
+      res.json(galleries);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch galleries" });
+    }
+  });
+
+  app.post("/api/galleries", async (req, res) => {
+    try {
+      const galleryData = insertGallerySchema.parse(req.body);
+      const gallery = await storage.createGallery(galleryData);
+      res.json(gallery);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid gallery data" });
+    }
+  });
+
+  app.put("/api/galleries/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const galleryData = insertGallerySchema.partial().parse(req.body);
+      const gallery = await storage.updateGallery(id, galleryData);
+      if (gallery) {
+        res.json(gallery);
+      } else {
+        res.status(404).json({ message: "Gallery not found" });
+      }
+    } catch (error) {
+      res.status(400).json({ message: "Invalid gallery data" });
+    }
+  });
+
+  app.delete("/api/galleries/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const deleted = await storage.deleteGallery(id);
+      if (deleted) {
+        res.json({ message: "Gallery deleted successfully" });
+      } else {
+        res.status(404).json({ message: "Gallery not found" });
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete gallery" });
+    }
+  });
+
+  // Services routes
+  app.get("/api/services", async (req, res) => {
+    try {
+      const category = req.query.category as string;
+      
+      let services;
+      if (category) {
+        services = await storage.getServicesByCategory(category);
+      } else {
+        services = await storage.getServices();
+      }
+      
+      res.json(services);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch services" });
+    }
+  });
+
+  app.post("/api/services", async (req, res) => {
+    try {
+      const serviceData = insertServiceSchema.parse(req.body);
+      const service = await storage.createService(serviceData);
+      res.json(service);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid service data" });
+    }
+  });
+
+  app.put("/api/services/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const serviceData = insertServiceSchema.partial().parse(req.body);
+      const service = await storage.updateService(id, serviceData);
+      if (service) {
+        res.json(service);
+      } else {
+        res.status(404).json({ message: "Service not found" });
+      }
+    } catch (error) {
+      res.status(400).json({ message: "Invalid service data" });
+    }
+  });
+
+  app.delete("/api/services/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const deleted = await storage.deleteService(id);
+      if (deleted) {
+        res.json({ message: "Service deleted successfully" });
+      } else {
+        res.status(404).json({ message: "Service not found" });
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete service" });
     }
   });
 

@@ -68,7 +68,7 @@ app.use((req, res, next) => {
   }
 
   // GANTI PORT DI SINI jika port 5000 bentrok
-  const port = 5001;
+  const port = process.env.PORT || 5001;
   server.listen(port, () => {
     log(`serving on port ${port}`);
   });

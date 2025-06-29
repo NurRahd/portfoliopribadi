@@ -65,8 +65,8 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
-    background-color: hsl(var(--background));
+    background-color: theme('colors.background');
+    @apply text-foreground font-sans antialiased;
     color: hsl(var(--foreground));
   }
 
@@ -156,6 +156,12 @@
 }
 
 @layer utilities {
+  .bg-background {
+    background-color: theme('colors.background');
+  }
+  .text-foreground {
+    color: theme('colors.foreground');
+  }
   .text-balance {
     text-wrap: balance;
   }

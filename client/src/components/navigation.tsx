@@ -118,7 +118,7 @@ export function Navigation() {
               <Camera className="h-5 w-5 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-primary leading-tight">Alex Chen</h1>
+              <h1 className="text-xl font-bold text-primary leading-tight">Rahd</h1>
               <p className="text-xs text-accent font-medium -mt-1">Photographer & Developer</p>
             </div>
           </Link>

@@ -19,18 +19,18 @@ async function seed() {
 
     // Insert Profile
     await db.insert(profile).values({
-      fullName: "Nisa Aulia",
-      position: "Photographer & Full Stack Developer",
-      email: "nisa@example.com",
-      phone: "+62 812-3456-7890",
-      location: "Jakarta, Indonesia",
+      fullName: "Nisa Nur Rahmadani",
+      position: "Photographer & Design Developer",
+      email: "rahn.capt@gmail.com",
+      phone: "+62 821-7147-1351",
+      location: "Karimun, Indonesia",
       bio: "Passionate photographer and IT developer with expertise in creating stunning visual experiences and robust digital solutions. Combining creative vision with technical skills to deliver exceptional results.",
-      age: 22,
-      linkedinUrl: "https://linkedin.com/in/nisa-aulia",
-      githubUrl: "https://github.com/nisa-aulia",
-      twitterUrl: "https://twitter.com/nisa-aulia",
-      instagramUrl: "https://instagram.com/nisa-aulia",
-      youtubeUrl: "https://youtube.com/@nisa-aulia"
+      age: 20,
+      linkedinUrl: "https://linkedin.com/in/",
+      githubUrl: "https://github.com/Rahd",
+      twitterUrl: "https://twitter.com/",
+      instagramUrl: "https://instagram.com/@nisanurhmadani_",
+      youtubeUrl: "https://youtube.com/@rahn.capt"
     });
 
     console.log('✅ Profile seeded');

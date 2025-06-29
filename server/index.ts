@@ -60,10 +60,10 @@ app.use((req, res, next) => {
   } else {
     serveStatic(app);
     // Serve static files dari dist/public
-    app.use(express.static(path.join(__dirname, "../dist/public")));
+    app.use(express.static(path.join(__dirname, "public")));
     // Catch-all route untuk SPA (React)
     app.get("*", (req, res) => {
-      res.sendFile(path.join(__dirname, "../dist/public/index.html"));
+      res.sendFile(path.join(__dirname, "public/index.html"));
     });
   }
 

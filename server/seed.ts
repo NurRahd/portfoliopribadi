@@ -30,7 +30,7 @@ async function seed() {
       githubUrl: "https://github.com/Rahd",
       twitterUrl: "https://twitter.com/",
       instagramUrl: "https://instagram.com/@nisanurhmadani_",
-      youtubeUrl: "https://youtube.com/@rahn.capt"
+      youtubeUrl: "https://instagram.com/@nisanurhmadani_"
     });
 
     console.log('✅ Profile seeded');

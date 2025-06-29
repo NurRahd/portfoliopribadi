@@ -58,7 +58,7 @@ app.use((req, res, next) => {
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {
-    serveStatic(app);
+    // serveStatic(app); // Dihapus agar tidak error path undefined di Railway
     // Serve static files dari dist/public
     app.use(express.static(path.join(__dirname, "public")));
     // Catch-all route untuk SPA (React)

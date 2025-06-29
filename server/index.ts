@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import path from "path";
 
 const app = express();
 app.use(express.json());
@@ -54,6 +55,12 @@ app.use((req, res, next) => {
     await setupVite(app, server);
   } else {
     serveStatic(app);
+    // Serve static files dari dist/public
+    app.use(express.static(path.join(__dirname, "../dist/public")));
+    // Catch-all route untuk SPA (React)
+    app.get("*", (req, res) => {
+      res.sendFile(path.join(__dirname, "../dist/public/index.html"));
+    });
   }
 
   // GANTI PORT DI SINI jika port 5000 bentrok

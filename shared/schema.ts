@@ -1,128 +1,147 @@
-import { pgTable, text, serial, integer, boolean, timestamp } from "drizzle-orm/pg-core";
+import { mysqlTable, varchar, int, text, timestamp, tinyint } from "drizzle-orm/mysql-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
-  username: text("username").notNull().unique(),
-  password: text("password").notNull(),
+export const users = mysqlTable("users", {
+  id: int("id").primaryKey().autoincrement(),
+  username: varchar("username", { length: 255 }).notNull().unique(),
+  password: varchar("password", { length: 255 }).notNull(),
 });
 
-export const profile = pgTable("profile", {
-  id: serial("id").primaryKey(),
-  fullName: text("full_name").notNull(),
-  position: text("position").notNull(),
-  email: text("email").notNull(),
-  phone: text("phone"),
-  location: text("location"),
+export const profile = mysqlTable("profile", {
+  id: int("id").primaryKey().autoincrement(),
+  fullName: varchar("full_name", { length: 255 }).notNull(),
+  position: varchar("position", { length: 255 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull(),
+  phone: varchar("phone", { length: 255 }),
+  location: varchar("location", { length: 255 }),
   bio: text("bio"),
-  age: integer("age"),
-  linkedinUrl: text("linkedin_url"),
-  githubUrl: text("github_url"),
-  twitterUrl: text("twitter_url"),
-  instagramUrl: text("instagram_url"),
-  youtubeUrl: text("youtube_url"),
+  age: int("age"),
+  linkedinUrl: varchar("linkedin_url", { length: 255 }),
+  githubUrl: varchar("github_url", { length: 255 }),
+  twitterUrl: varchar("twitter_url", { length: 255 }),
+  instagramUrl: varchar("instagram_url", { length: 255 }),
+  youtubeUrl: varchar("youtube_url", { length: 255 }),
+  photoUrl: varchar("photo_url", { length: 255 }),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const skills = pgTable("skills", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  category: text("category").notNull(),
-  proficiency: integer("proficiency").notNull(), // 0-100
+export const skills = mysqlTable("skills", {
+  id: int("id").primaryKey().autoincrement(),
+  name: varchar("name", { length: 255 }).notNull(),
+  category: varchar("category", { length: 255 }).notNull(),
+  proficiency: int("proficiency").notNull(),
   description: text("description"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const experiences = pgTable("experiences", {
-  id: serial("id").primaryKey(),
-  title: text("title").notNull(),
-  company: text("company").notNull(),
-  startDate: text("start_date").notNull(),
-  endDate: text("end_date"), // null for current position
+export const experiences = mysqlTable("experiences", {
+  id: int("id").primaryKey().autoincrement(),
+  title: varchar("title", { length: 255 }).notNull(),
+  company: varchar("company", { length: 255 }).notNull(),
+  startDate: varchar("start_date", { length: 255 }).notNull(),
+  endDate: varchar("end_date", { length: 255 }),
   description: text("description"),
-  technologies: text("technologies").array(), // array of technology tags
+  technologies: text("technologies"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const education = pgTable("education", {
-  id: serial("id").primaryKey(),
-  degree: text("degree").notNull(),
-  institution: text("institution").notNull(),
-  year: text("year").notNull(),
+export const education = mysqlTable("education", {
+  id: int("id").primaryKey().autoincrement(),
+  degree: varchar("degree", { length: 255 }).notNull(),
+  institution: varchar("institution", { length: 255 }).notNull(),
+  year: varchar("year", { length: 255 }).notNull(),
   description: text("description"),
-  gpa: text("gpa"),
+  gpa: varchar("gpa", { length: 255 }),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const certifications = pgTable("certifications", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  issuer: text("issuer").notNull(),
-  year: text("year").notNull(),
-  credentialUrl: text("credential_url"),
+export const certifications = mysqlTable("certifications", {
+  id: int("id").primaryKey().autoincrement(),
+  name: varchar("name", { length: 255 }).notNull(),
+  issuer: varchar("issuer", { length: 255 }).notNull(),
+  year: varchar("year", { length: 255 }).notNull(),
+  credentialUrl: varchar("credential_url", { length: 255 }),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const activities = pgTable("activities", {
-  id: serial("id").primaryKey(),
-  title: text("title").notNull(),
+export const activities = mysqlTable("activities", {
+  id: int("id").primaryKey().autoincrement(),
+  title: varchar("title", { length: 255 }).notNull(),
   description: text("description").notNull(),
-  icon: text("icon").notNull(), // FontAwesome icon class
-  color: text("color").notNull(), // Tailwind color class
+  icon: varchar("icon", { length: 255 }).notNull(),
+  color: varchar("color", { length: 255 }).notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const galleries = pgTable("galleries", {
-  id: serial("id").primaryKey(),
-  title: text("title").notNull(),
+export const galleries = mysqlTable("galleries", {
+  id: int("id").primaryKey().autoincrement(),
+  title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),
-  imageUrl: text("image_url").notNull(),
-  category: text("category").notNull(), // portrait, landscape, event, commercial, etc.
-  featured: boolean("featured").default(false),
-  tags: text("tags").array(), // array of tags for searching
+  imageUrl: varchar("image_url", { length: 255 }).notNull(),
+  category: varchar("category", { length: 255 }).notNull(),
+  featured: tinyint("featured").default(0),
+  tags: text("tags"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const services = pgTable("services", {
-  id: serial("id").primaryKey(),
-  title: text("title").notNull(),
+export const services = mysqlTable("services", {
+  id: int("id").primaryKey().autoincrement(),
+  title: varchar("title", { length: 255 }).notNull(),
   description: text("description").notNull(),
-  icon: text("icon").notNull(),
-  category: text("category").notNull(), // photography, development
-  price: text("price"),
-  features: text("features").array(),
+  icon: varchar("icon", { length: 255 }).notNull(),
+  category: varchar("category", { length: 255 }).notNull(),
+  price: varchar("price", { length: 255 }),
+  features: text("features"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const articles = pgTable("articles", {
-  id: serial("id").primaryKey(),
-  title: text("title").notNull(),
-  slug: text("slug").notNull().unique(),
+export const projects = mysqlTable("projects", {
+  id: int("id").primaryKey().autoincrement(),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description").notNull(),
+  imageUrl: varchar("image_url", { length: 255 }),
+  category: varchar("category", { length: 255 }).notNull(),
+  technologies: text("technologies"),
+  projectUrl: varchar("project_url", { length: 255 }),
+  githubUrl: varchar("github_url", { length: 255 }),
+  featured: tinyint("featured").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const articles = mysqlTable("articles", {
+  id: int("id").primaryKey().autoincrement(),
+  title: varchar("title", { length: 255 }).notNull(),
+  slug: varchar("slug", { length: 255 }).notNull().unique(),
   excerpt: text("excerpt").notNull(),
   content: text("content").notNull(),
-  category: text("category").notNull(),
-  readTime: integer("read_time").notNull(), // in minutes
-  imageUrl: text("image_url"),
-  published: boolean("published").default(false),
-  featured: boolean("featured").default(false),
+  category: varchar("category", { length: 255 }).notNull(),
+  readTime: int("read_time").notNull(),
+  imageUrl: varchar("image_url", { length: 255 }),
+  published: tinyint("published").default(0),
+  featured: tinyint("featured").default(0),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const contactMessages = pgTable("contact_messages", {
-  id: serial("id").primaryKey(),
-  firstName: text("first_name").notNull(),
-  lastName: text("last_name").notNull(),
-  email: text("email").notNull(),
-  subject: text("subject").notNull(),
+export const contactMessages = mysqlTable("contact_messages", {
+  id: int("id").primaryKey().autoincrement(),
+  firstName: varchar("first_name", { length: 255 }).notNull(),
+  lastName: varchar("last_name", { length: 255 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull(),
+  subject: varchar("subject", { length: 255 }).notNull(),
   message: text("message").notNull(),
-  read: boolean("read").default(false),
+  read: tinyint("read").default(0),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
 // Insert schemas
+export const insertUserSchema = createInsertSchema(users).pick({
+  username: true,
+  password: true,
+});
+
 export const insertProfileSchema = createInsertSchema(profile).omit({
   id: true,
   createdAt: true,
@@ -176,6 +195,11 @@ export const insertServiceSchema = createInsertSchema(services).omit({
   createdAt: true,
 });
 
+export const insertProjectSchema = createInsertSchema(projects).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -210,7 +234,5 @@ export type InsertGallery = z.infer<typeof insertGallerySchema>;
 export type Service = typeof services.$inferSelect;
 export type InsertService = z.infer<typeof insertServiceSchema>;
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
-});
+export type Project = typeof projects.$inferSelect;
+export type InsertProject = z.infer<typeof insertProjectSchema>;

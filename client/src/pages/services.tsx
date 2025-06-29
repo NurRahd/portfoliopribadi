@@ -29,6 +29,17 @@ function LoadingSkeleton() {
 
 function ServiceCard({ service }: { service: Service }) {
   const isPhotography = service.category === "photography";
+  let features: string[] = [];
+  if (typeof service.features === 'string') {
+    try {
+      features = JSON.parse(service.features || '[]');
+      if (!Array.isArray(features)) features = [];
+    } catch {
+      features = [];
+    }
+  } else if (Array.isArray(service.features)) {
+    features = service.features;
+  }
   
   return (
     <Card className="group hover:shadow-lg transition-all duration-300 border-2 hover:border-primary/20">
@@ -60,11 +71,11 @@ function ServiceCard({ service }: { service: Service }) {
           </div>
         )}
 
-        {service.features && service.features.length > 0 && (
+        {features.length > 0 && (
           <div className="space-y-2">
             <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">Yang Termasuk:</h4>
             <ul className="space-y-2">
-              {service.features.map((feature, index) => (
+              {features.map((feature, index) => (
                 <li key={index} className="flex items-center gap-2 text-sm">
                   <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
                   <span>{feature}</span>

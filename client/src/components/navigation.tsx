@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { Link, useLocation } from "wouter";
+import { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useTheme } from "@/components/theme-provider";
-import { Menu, Moon, Sun, Camera } from "lucide-react";
+import { Menu, Moon, Sun, Camera, LogIn, LogOut, User } from "lucide-react";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -11,16 +11,51 @@ const navItems = [
   { href: "/services", label: "Services" },
   { href: "/articles", label: "Articles" },
   { href: "/contact", label: "Contact" },
-  { href: "/admin", label: "Admin" },
 ];
 
 export function Navigation() {
-  const [location] = useLocation();
+  const location = useLocation();
+  const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState("");
+  
+  // Check if user is logged in
+  useEffect(() => {
+    const checkAuth = () => {
+      const loggedIn = localStorage.getItem("isAdminLoggedIn") === "true";
+      const adminUsername = localStorage.getItem("adminUsername") || "";
+      setIsLoggedIn(loggedIn);
+      setUsername(adminUsername);
+    };
+
+    checkAuth();
+
+    // Listen for storage changes
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "isAdminLoggedIn") {
+        checkAuth();
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
 
   const toggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("isAdminLoggedIn");
+    localStorage.removeItem("adminUsername");
+    setIsLoggedIn(false);
+    setUsername("");
+    navigate("/");
   };
 
   const NavLinks = ({ mobile = false }: { mobile?: boolean }) => (
@@ -28,13 +63,13 @@ export function Navigation() {
       {navItems.map((item) => (
         <Link
           key={item.href}
-          href={item.href}
+          to={item.href}
           className={`transition-colors duration-200 ${
             mobile
               ? "block px-3 py-2 rounded-md text-base font-medium hover:bg-accent hover:text-accent-foreground"
               : "text-sm font-medium hover:text-primary"
           } ${
-            location === item.href
+            location.pathname === item.href
               ? mobile
                 ? "bg-accent text-accent-foreground"
                 : "text-primary"
@@ -47,6 +82,29 @@ export function Navigation() {
           {item.label}
         </Link>
       ))}
+      
+      {/* Admin link - only show if logged in */}
+      {isLoggedIn && (
+        <Link
+          to="/admin"
+          className={`transition-colors duration-200 ${
+            mobile
+              ? "block px-3 py-2 rounded-md text-base font-medium hover:bg-accent hover:text-accent-foreground"
+              : "text-sm font-medium hover:text-primary"
+          } ${
+            location.pathname === "/admin"
+              ? mobile
+                ? "bg-accent text-accent-foreground"
+                : "text-primary"
+              : mobile
+              ? "text-muted-foreground"
+              : "text-muted-foreground"
+          }`}
+          onClick={mobile ? () => setIsOpen(false) : undefined}
+        >
+          Admin
+        </Link>
+      )}
     </>
   );
 
@@ -55,7 +113,7 @@ export function Navigation() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/" className="flex-shrink-0 flex items-center gap-3 group">
+          <Link to="/" className="flex-shrink-0 flex items-center gap-3 group">
             <div className="bg-primary p-2 rounded-lg group-hover:scale-110 transition-transform duration-200">
               <Camera className="h-5 w-5 text-primary-foreground" />
             </div>
@@ -69,6 +127,33 @@ export function Navigation() {
           <div className="hidden md:block">
             <div className="flex items-center space-x-8">
               <NavLinks />
+              
+              {/* User section */}
+              {isLoggedIn ? (
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                    <User className="w-4 h-4" />
+                    <span>{username}</span>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleLogout}
+                    className="flex items-center space-x-2"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Logout</span>
+                  </Button>
+                </div>
+              ) : (
+                <Link to="/login">
+                  <Button variant="outline" size="sm" className="flex items-center space-x-2">
+                    <LogIn className="w-4 h-4" />
+                    <span>Login</span>
+                  </Button>
+                </Link>
+              )}
+              
               <Button
                 variant="ghost"
                 size="icon"
@@ -84,6 +169,32 @@ export function Navigation() {
 
           {/* Mobile Navigation */}
           <div className="md:hidden flex items-center space-x-4">
+            {/* User section */}
+            {isLoggedIn ? (
+              <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-1 text-xs text-muted-foreground">
+                  <User className="w-3 h-3" />
+                  <span className="hidden sm:inline">{username}</span>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleLogout}
+                  className="flex items-center space-x-1"
+                >
+                  <LogOut className="w-3 h-3" />
+                  <span className="hidden sm:inline">Logout</span>
+                </Button>
+              </div>
+            ) : (
+              <Link to="/login">
+                <Button variant="outline" size="sm" className="flex items-center space-x-2">
+                  <LogIn className="w-4 h-4" />
+                  <span className="hidden sm:inline">Login</span>
+                </Button>
+              </Link>
+            )}
+            
             <Button
               variant="ghost"
               size="icon"

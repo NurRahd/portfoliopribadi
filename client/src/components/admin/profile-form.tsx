@@ -22,6 +22,8 @@ export function ProfileForm({ profile, isLoading }: ProfileFormProps) {
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<InsertProfile>({
     resolver: zodResolver(insertProfileSchema),
@@ -38,6 +40,7 @@ export function ProfileForm({ profile, isLoading }: ProfileFormProps) {
       twitterUrl: profile.twitterUrl || "",
       instagramUrl: profile.instagramUrl || "",
       youtubeUrl: profile.youtubeUrl || "",
+      photoUrl: profile.photoUrl || "",
     } : undefined,
   });
 
@@ -62,7 +65,25 @@ export function ProfileForm({ profile, isLoading }: ProfileFormProps) {
     },
   });
 
+  // Handler upload foto profile
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await fetch("/api/upload/profile-photo", {
+      method: "POST",
+      body: formData,
+    });
+    const data = await res.json();
+    setValue("photoUrl", data.url, { shouldValidate: true });
+  };
+
+  const photoUrl = watch("photoUrl");
+
   const onSubmit = (data: InsertProfile) => {
+    // Debug log untuk memastikan payload benar
+    console.log('Payload ke backend:', data);
     updateProfileMutation.mutate(data);
   };
 
@@ -222,6 +243,20 @@ export function ProfileForm({ profile, isLoading }: ProfileFormProps) {
             className="mt-2"
           />
         </div>
+      </div>
+
+      <div className="mb-4">
+        <Label htmlFor="photoUrl">Profile Photo</Label>
+        <Input
+          id="photoUrl"
+          type="file"
+          accept="image/*"
+          onChange={handlePhotoChange}
+          className="mt-2"
+        />
+        {photoUrl && (
+          <img src={photoUrl} alt="Profile Preview" className="mt-2 rounded w-32 h-32 object-cover border" />
+        )}
       </div>
 
       <Button 

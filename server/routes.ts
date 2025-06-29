@@ -4,8 +4,19 @@ import { storage } from "./storage";
 import { 
   insertProfileSchema, insertSkillSchema, insertExperienceSchema, 
   insertEducationSchema, insertCertificationSchema, insertActivitySchema, 
-  insertArticleSchema, insertContactMessageSchema, insertGallerySchema, insertServiceSchema
+  insertArticleSchema, insertContactMessageSchema, insertGallerySchema, insertServiceSchema,
+  insertProjectSchema
 } from "@shared/schema";
+import { z } from "zod";
+import path from "path";
+import fs from "fs";
+import multer from "multer";
+
+console.log('ROUTES LOADED');
+
+const uploadDir = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
+const storageMulter = multer({ dest: uploadDir });
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Profile routes
@@ -59,7 +70,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.status(404).json({ message: "Skill not found" });
       }
     } catch (error) {
-      res.status(400).json({ message: "Invalid skill data" });
+      console.error("Skill update error:", error);
+      res.status(400).json({ message: "Invalid skill data", detail: error instanceof Error ? error.message : error });
     }
   });
 
@@ -358,10 +370,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/contact-messages", async (req, res) => {
     try {
+      console.log("Contact message received:", req.body);
       const messageData = insertContactMessageSchema.parse(req.body);
       const message = await storage.createContactMessage(messageData);
       res.json(message);
     } catch (error) {
+      console.error("Contact message error:", error);
       res.status(400).json({ message: "Invalid message data" });
     }
   });
@@ -509,6 +523,81 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       res.status(500).json({ message: "Failed to delete service" });
     }
+  });
+
+  // Projects routes
+  app.get("/api/projects", async (req, res) => {
+    try {
+      const category = req.query.category as string;
+      const featured = req.query.featured === 'true';
+      
+      let projects;
+      if (featured) {
+        projects = await storage.getFeaturedProjects();
+      } else if (category) {
+        projects = await storage.getProjectsByCategory(category);
+      } else {
+        projects = await storage.getProjects();
+      }
+      
+      res.json(projects);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch projects" });
+    }
+  });
+
+  app.post("/api/projects", async (req, res) => {
+    try {
+      const projectData = insertProjectSchema.parse(req.body);
+      const project = await storage.createProject(projectData);
+      res.json(project);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid project data" });
+    }
+  });
+
+  app.put("/api/projects/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const projectData = insertProjectSchema.partial().parse(req.body);
+      const project = await storage.updateProject(id, projectData);
+      if (project) {
+        res.json(project);
+      } else {
+        res.status(404).json({ message: "Project not found" });
+      }
+    } catch (error) {
+      res.status(400).json({ message: "Invalid project data" });
+    }
+  });
+
+  app.delete("/api/projects/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const deleted = await storage.deleteProject(id);
+      if (deleted) {
+        res.json({ message: "Project deleted successfully" });
+      } else {
+        res.status(404).json({ message: "Project not found" });
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete project" });
+    }
+  });
+
+  // Upload profile photo
+  app.post("/api/upload/profile-photo", storageMulter.single("file"), (req, res) => {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+    // Rename file to original name (or keep random name for uniqueness)
+    const ext = path.extname(req.file.originalname);
+    const newFilename = req.file.filename + ext;
+    const newPath = path.join(uploadDir, newFilename);
+    fs.renameSync(req.file.path, newPath);
+    // URL yang bisa diakses frontend
+    const fileUrl = `/uploads/${newFilename}`;
+    res.json({ url: fileUrl });
   });
 
   const httpServer = createServer(app);

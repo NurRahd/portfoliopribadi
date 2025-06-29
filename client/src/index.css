@@ -3,69 +3,71 @@
 @tailwind utilities;
 
 :root {
-  /* Photography Theme - Cream Mode */
-  --background: hsl(36, 27%, 87%); /* Cream #DCC6AA */
-  --foreground: hsl(0, 0%, 8%); /* Near black text */
-  --muted: hsl(35, 20%, 75%); /* Muted cream */
-  --muted-foreground: hsl(0, 0%, 35%);
-  --popover: hsl(36, 27%, 87%);
-  --popover-foreground: hsl(0, 0%, 8%);
-  --card: hsl(40, 20%, 92%); /* Lighter cream for cards */
-  --card-foreground: hsl(0, 0%, 12%);
-  --border: hsl(30, 15%, 70%); /* Subtle cream border */
-  --input: hsl(35, 20%, 80%);
-  --primary: hsl(0, 0%, 0%); /* Pure black for primary */
-  --primary-foreground: hsl(36, 27%, 87%); /* Cream text on black */
-  --secondary: hsl(30, 15%, 25%); /* Dark brown/charcoal */
-  --secondary-foreground: hsl(36, 27%, 87%);
-  --accent: hsl(25, 40%, 20%); /* Rich dark brown */
-  --accent-foreground: hsl(36, 27%, 87%);
-  --destructive: hsl(0, 84.2%, 40%);
-  --destructive-foreground: hsl(36, 27%, 87%);
-  --ring: hsl(0, 0%, 0%);
+  /* Photography Theme - Light Mode (Cream) */
+  --background: 36 27% 87%; /* Cream #DCC6AA */
+  --foreground: 0 0% 8%; /* Near black text */
+  --muted: 35 20% 75%; /* Muted cream */
+  --muted-foreground: 0 0% 35%;
+  --popover: 36 27% 87%;
+  --popover-foreground: 0 0% 8%;
+  --card: 40 20% 92%; /* Lighter cream for cards */
+  --card-foreground: 0 0% 12%;
+  --border: 30 15% 70%; /* Subtle cream border */
+  --input: 35 20% 80%;
+  --primary: 0 0% 0%; /* Pure black for primary */
+  --primary-foreground: 36 27% 87%; /* Cream text on black */
+  --secondary: 30 15% 25%; /* Dark brown/charcoal */
+  --secondary-foreground: 36 27% 87%;
+  --accent: 25 40% 20%; /* Rich dark brown */
+  --accent-foreground: 36 27% 87%;
+  --destructive: 0 84.2% 40%;
+  --destructive-foreground: 36 27% 87%;
+  --ring: 0 0% 0%;
   --radius: 0.75rem;
-  --chart-1: hsl(25, 40%, 20%);
-  --chart-2: hsl(35, 30%, 40%);
-  --chart-3: hsl(0, 0%, 15%);
-  --chart-4: hsl(30, 25%, 60%);
-  --chart-5: hsl(40, 35%, 30%);
+  --chart-1: 25 40% 20%;
+  --chart-2: 35 30% 40%;
+  --chart-3: 0 0% 15%;
+  --chart-4: 30 25% 60%;
+  --chart-5: 40 35% 30%;
 }
 
 .dark {
   /* Photography Theme - Dark Mode */
-  --background: hsl(0, 0%, 8%); /* Near black background */
-  --foreground: hsl(36, 27%, 87%); /* Cream text */
-  --muted: hsl(0, 0%, 18%); /* Dark muted */
-  --muted-foreground: hsl(35, 20%, 65%);
-  --popover: hsl(0, 0%, 8%);
-  --popover-foreground: hsl(36, 27%, 87%);
-  --card: hsl(0, 0%, 12%); /* Dark card background */
-  --card-foreground: hsl(36, 27%, 87%);
-  --border: hsl(0, 0%, 20%); /* Dark border */
-  --input: hsl(0, 0%, 15%);
-  --primary: hsl(36, 27%, 87%); /* Cream primary in dark mode */
-  --primary-foreground: hsl(0, 0%, 8%);
-  --secondary: hsl(30, 15%, 15%); /* Very dark brown */
-  --secondary-foreground: hsl(36, 27%, 87%);
-  --accent: hsl(25, 40%, 65%); /* Light brown accent */
-  --accent-foreground: hsl(0, 0%, 8%);
-  --destructive: hsl(0, 62.8%, 50%);
-  --destructive-foreground: hsl(36, 27%, 87%);
-  --ring: hsl(36, 27%, 87%);
-  --chart-1: hsl(36, 27%, 87%);
-  --chart-2: hsl(25, 40%, 65%);
-  --chart-3: hsl(35, 30%, 50%);
-  --chart-4: hsl(0, 0%, 60%);
-  --chart-5: hsl(30, 25%, 40%);
+  --background: 0 0% 5%; /* Very dark background */
+  --foreground: 36 27% 87%; /* Cream text */
+  --muted: 0 0% 15%; /* Dark muted */
+  --muted-foreground: 35 20% 65%;
+  --popover: 0 0% 8%;
+  --popover-foreground: 36 27% 87%;
+  --card: 0 0% 10%; /* Dark card background */
+  --card-foreground: 36 27% 87%;
+  --border: 0 0% 20%; /* Dark border */
+  --input: 0 0% 15%;
+  --primary: 36 27% 87%; /* Cream primary in dark mode */
+  --primary-foreground: 0 0% 8%;
+  --secondary: 30 15% 15%; /* Very dark brown */
+  --secondary-foreground: 36 27% 87%;
+  --accent: 25 40% 65%; /* Light brown accent */
+  --accent-foreground: 0 0% 8%;
+  --destructive: 0 62.8% 50%;
+  --destructive-foreground: 36 27% 87%;
+  --ring: 36 27% 87%;
+  --chart-1: 36 27% 87%;
+  --chart-2: 25 40% 65%;
+  --chart-3: 35 30% 50%;
+  --chart-4: 0 0% 60%;
+  --chart-5: 30 25% 40%;
 }
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
   }
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
   }
 
   html {
@@ -87,19 +89,69 @@
   }
 
   .gradient-primary {
-    background: linear-gradient(135deg, hsl(0, 0%, 0%) 0%, hsl(25, 40%, 20%) 100%);
+    background: linear-gradient(135deg, hsl(0 0% 0%) 0%, hsl(25 40% 20%) 100%);
   }
 
   .gradient-card {
-    background: linear-gradient(135deg, hsl(0, 0%, 8%) 0%, hsl(30, 15%, 15%) 100%);
+    background: linear-gradient(135deg, hsl(0 0% 8%) 0%, hsl(30 15% 15%) 100%);
   }
 
   .photography-gradient {
-    background: linear-gradient(135deg, hsl(36, 27%, 87%) 0%, hsl(35, 20%, 75%) 100%);
+    background: linear-gradient(135deg, hsl(36 27% 87%) 0%, hsl(35 20% 75%) 100%);
   }
 
   .dark .photography-gradient {
-    background: linear-gradient(135deg, hsl(0, 0%, 12%) 0%, hsl(30, 15%, 15%) 100%);
+    background: linear-gradient(135deg, hsl(0 0% 10%) 0%, hsl(30 15% 15%) 100%);
+  }
+
+  /* Custom card styles */
+  .card {
+    background-color: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    color: hsl(var(--card-foreground));
+  }
+
+  /* Custom button styles */
+  .btn-primary {
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    border: 1px solid hsl(var(--primary));
+  }
+
+  .btn-primary:hover {
+    background-color: hsl(var(--primary) / 0.9);
+  }
+
+  .btn-secondary {
+    background-color: hsl(var(--secondary));
+    color: hsl(var(--secondary-foreground));
+    border: 1px solid hsl(var(--secondary));
+  }
+
+  .btn-secondary:hover {
+    background-color: hsl(var(--secondary) / 0.9);
+  }
+
+  /* Form styling untuk menghilangkan transparansi */
+  .form-input-solid {
+    background-color: white !important;
+    color: hsl(var(--foreground)) !important;
+    border: 1px solid hsl(var(--border)) !important;
+  }
+
+  .dark .form-input-solid {
+    background-color: hsl(0 0% 15%) !important;
+    color: hsl(var(--foreground)) !important;
+  }
+
+  .form-modal-solid {
+    background-color: white !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+  }
+
+  .dark .form-modal-solid {
+    background-color: hsl(0 0% 10%) !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2) !important;
   }
 }
 

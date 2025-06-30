@@ -122,7 +122,7 @@ Changelog:
   - Created Gallery page with category filtering and featured works
   - Created Services page with photography and development service showcase
   - Updated navigation with camera logo and new menu items
-  - Transformed profile data to Alex Chen (Photographer & Developer)
+  - Transformed profile data to Rahd (Photographer & Developer)
   - Updated hero section to reflect dual expertise
   - Added API endpoints for galleries and services management
 - June 21, 2025. Initial setup

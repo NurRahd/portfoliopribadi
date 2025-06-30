@@ -225,6 +225,7 @@ var pool = mysql.createPool({
   user: process.env.DB_USER || "root",
   password: process.env.DB_PASS || "",
   database: process.env.DB_NAME || "portfolio",
+  port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 3306,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
@@ -1068,18 +1069,6 @@ async function setupVite(app2, server) {
     }
   });
 }
-function serveStatic(app2) {
-  const distPath = path3.resolve(import.meta.dirname, "public");
-  if (!fs2.existsSync(distPath)) {
-    throw new Error(
-      `Could not find the build directory: ${distPath}, make sure to build the client first`
-    );
-  }
-  app2.use(express.static(distPath));
-  app2.use("*", (_req, res) => {
-    res.sendFile(path3.resolve(distPath, "index.html"));
-  });
-}
 
 // server/index.ts
 import path4 from "path";
@@ -1124,13 +1113,12 @@ app.use((req, res, next) => {
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {
-    serveStatic(app);
-    app.use(express2.static(path4.join(__dirname2, "../dist/public")));
+    app.use(express2.static(path4.join(__dirname2, "public")));
     app.get("*", (req, res) => {
-      res.sendFile(path4.join(__dirname2, "../dist/public/index.html"));
+      res.sendFile(path4.join(__dirname2, "public/index.html"));
     });
   }
-  const port = 5001;
+  const port = process.env.PORT || 5001;
   server.listen(port, () => {
     log(`serving on port ${port}`);
   });

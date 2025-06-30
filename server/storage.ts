@@ -10,7 +10,7 @@ import {
   type Project, type InsertProject
 } from "@shared/schema";
 
-export class SqliteStorage {
+export class MySqlStorage {
   // User methods
   async getUser(id: number): Promise<User | undefined> {
     const result = await db.select().from(users).where(eq(users.id, id));
@@ -35,14 +35,15 @@ export class SqliteStorage {
     const existing = await db.select().from(profile);
     if (existing.length > 0) {
       // Update profile pertama
-      const [updated] = await db.update(profile)
+      await db.update(profile)
         .set(profileData)
-        .where(eq(profile.id, existing[0].id))
-        .returning();
-      return updated;
+        .where(eq(profile.id, existing[0].id));
+      // Ambil data profile terbaru
+      const updated = await db.select().from(profile).where(eq(profile.id, existing[0].id));
+      return updated[0];
     } else {
       // Insert baru jika belum ada
-      const [created] = await db.insert(profile).values(profileData).returning();
+      const [created] = await db.insert(profile).values(profileData);
       return created;
     }
   }
@@ -52,12 +53,14 @@ export class SqliteStorage {
     return await db.select().from(skills);
   }
   async createSkill(skill: InsertSkill): Promise<Skill> {
-    const [created] = await db.insert(skills).values(skill).returning();
-    return created;
+    await db.insert(skills).values(skill);
+    const result = await db.select().from(skills).orderBy(skills.id);
+    return result[result.length - 1];
   }
   async updateSkill(id: number, skill: Partial<InsertSkill>): Promise<Skill | undefined> {
-    const [updated] = await db.update(skills).set(skill).where(eq(skills.id, id)).returning();
-    return updated;
+    await db.update(skills).set(skill).where(eq(skills.id, id));
+    const result = await db.select().from(skills).where(eq(skills.id, id));
+    return result[0];
   }
   async deleteSkill(id: number): Promise<boolean> {
     const result = await db.delete(skills).where(eq(skills.id, id));
@@ -69,12 +72,14 @@ export class SqliteStorage {
     return await db.select().from(experiences);
   }
   async createExperience(experience: InsertExperience): Promise<Experience> {
-    const [created] = await db.insert(experiences).values(experience).returning();
-    return created;
+    await db.insert(experiences).values(experience);
+    const result = await db.select().from(experiences).orderBy(experiences.id);
+    return result[result.length - 1];
   }
   async updateExperience(id: number, experience: Partial<InsertExperience>): Promise<Experience | undefined> {
-    const [updated] = await db.update(experiences).set(experience).where(eq(experiences.id, id)).returning();
-    return updated;
+    await db.update(experiences).set(experience).where(eq(experiences.id, id));
+    const result = await db.select().from(experiences).where(eq(experiences.id, id));
+    return result[0];
   }
   async deleteExperience(id: number): Promise<boolean> {
     const result = await db.delete(experiences).where(eq(experiences.id, id));
@@ -86,12 +91,14 @@ export class SqliteStorage {
     return await db.select().from(education);
   }
   async createEducation(edu: InsertEducation): Promise<Education> {
-    const [created] = await db.insert(education).values(edu).returning();
-    return created;
+    await db.insert(education).values(edu);
+    const result = await db.select().from(education).orderBy(education.id);
+    return result[result.length - 1];
   }
   async updateEducation(id: number, edu: Partial<InsertEducation>): Promise<Education | undefined> {
-    const [updated] = await db.update(education).set(edu).where(eq(education.id, id)).returning();
-    return updated;
+    await db.update(education).set(edu).where(eq(education.id, id));
+    const result = await db.select().from(education).where(eq(education.id, id));
+    return result[0];
   }
   async deleteEducation(id: number): Promise<boolean> {
     const result = await db.delete(education).where(eq(education.id, id));
@@ -103,12 +110,14 @@ export class SqliteStorage {
     return await db.select().from(certifications);
   }
   async createCertification(cert: InsertCertification): Promise<Certification> {
-    const [created] = await db.insert(certifications).values(cert).returning();
-    return created;
+    await db.insert(certifications).values(cert);
+    const result = await db.select().from(certifications).orderBy(certifications.id);
+    return result[result.length - 1];
   }
   async updateCertification(id: number, cert: Partial<InsertCertification>): Promise<Certification | undefined> {
-    const [updated] = await db.update(certifications).set(cert).where(eq(certifications.id, id)).returning();
-    return updated;
+    await db.update(certifications).set(cert).where(eq(certifications.id, id));
+    const result = await db.select().from(certifications).where(eq(certifications.id, id));
+    return result[0];
   }
   async deleteCertification(id: number): Promise<boolean> {
     const result = await db.delete(certifications).where(eq(certifications.id, id));
@@ -120,12 +129,14 @@ export class SqliteStorage {
     return await db.select().from(activities);
   }
   async createActivity(activity: InsertActivity): Promise<Activity> {
-    const [created] = await db.insert(activities).values(activity).returning();
-    return created;
+    await db.insert(activities).values(activity);
+    const result = await db.select().from(activities).orderBy(activities.id);
+    return result[result.length - 1];
   }
   async updateActivity(id: number, activity: Partial<InsertActivity>): Promise<Activity | undefined> {
-    const [updated] = await db.update(activities).set(activity).where(eq(activities.id, id)).returning();
-    return updated;
+    await db.update(activities).set(activity).where(eq(activities.id, id));
+    const result = await db.select().from(activities).where(eq(activities.id, id));
+    return result[0];
   }
   async deleteActivity(id: number): Promise<boolean> {
     const result = await db.delete(activities).where(eq(activities.id, id));
@@ -147,12 +158,14 @@ export class SqliteStorage {
     return result[0];
   }
   async createArticle(article: InsertArticle): Promise<Article> {
-    const [created] = await db.insert(articles).values(article).returning();
-    return created;
+    await db.insert(articles).values(article);
+    const result = await db.select().from(articles).orderBy(articles.id);
+    return result[result.length - 1];
   }
   async updateArticle(id: number, article: Partial<InsertArticle>): Promise<Article | undefined> {
-    const [updated] = await db.update(articles).set(article).where(eq(articles.id, id)).returning();
-    return updated;
+    await db.update(articles).set(article).where(eq(articles.id, id));
+    const result = await db.select().from(articles).where(eq(articles.id, id));
+    return result[0];
   }
   async deleteArticle(id: number): Promise<boolean> {
     const result = await db.delete(articles).where(eq(articles.id, id));
@@ -164,12 +177,13 @@ export class SqliteStorage {
     return await db.select().from(contactMessages);
   }
   async createContactMessage(message: InsertContactMessage): Promise<ContactMessage> {
-    const [created] = await db.insert(contactMessages).values(message).returning();
-    return created;
+    await db.insert(contactMessages).values(message);
+    const result = await db.select().from(contactMessages).orderBy(contactMessages.id);
+    return result[result.length - 1];
   }
   async markMessageAsRead(id: number): Promise<boolean> {
-    const [updated] = await db.update(contactMessages).set({ read: true }).where(eq(contactMessages.id, id)).returning();
-    return !!updated;
+    await db.update(contactMessages).set({ read: true }).where(eq(contactMessages.id, id));
+    return true;
   }
   async deleteContactMessage(id: number): Promise<boolean> {
     const result = await db.delete(contactMessages).where(eq(contactMessages.id, id));
@@ -187,12 +201,14 @@ export class SqliteStorage {
     return (await db.select().from(galleries)).filter(g => g.featured);
   }
   async createGallery(gallery: InsertGallery): Promise<Gallery> {
-    const [created] = await db.insert(galleries).values(gallery).returning();
-    return created;
+    await db.insert(galleries).values(gallery);
+    const result = await db.select().from(galleries).orderBy(galleries.id);
+    return result[result.length - 1];
   }
   async updateGallery(id: number, gallery: Partial<InsertGallery>): Promise<Gallery | undefined> {
-    const [updated] = await db.update(galleries).set(gallery).where(eq(galleries.id, id)).returning();
-    return updated;
+    await db.update(galleries).set(gallery).where(eq(galleries.id, id));
+    const result = await db.select().from(galleries).where(eq(galleries.id, id));
+    return result[0];
   }
   async deleteGallery(id: number): Promise<boolean> {
     const result = await db.delete(galleries).where(eq(galleries.id, id));
@@ -207,12 +223,14 @@ export class SqliteStorage {
     return (await db.select().from(services)).filter(s => s.category === category);
   }
   async createService(service: InsertService): Promise<Service> {
-    const [created] = await db.insert(services).values(service).returning();
-    return created;
+    await db.insert(services).values(service);
+    const result = await db.select().from(services).orderBy(services.id);
+    return result[result.length - 1];
   }
   async updateService(id: number, service: Partial<InsertService>): Promise<Service | undefined> {
-    const [updated] = await db.update(services).set(service).where(eq(services.id, id)).returning();
-    return updated;
+    await db.update(services).set(service).where(eq(services.id, id));
+    const result = await db.select().from(services).where(eq(services.id, id));
+    return result[0];
   }
   async deleteService(id: number): Promise<boolean> {
     const result = await db.delete(services).where(eq(services.id, id));
@@ -230,12 +248,14 @@ export class SqliteStorage {
     return (await db.select().from(projects)).filter(p => p.featured);
   }
   async createProject(project: InsertProject): Promise<Project> {
-    const [created] = await db.insert(projects).values(project).returning();
-    return created;
+    await db.insert(projects).values(project);
+    const result = await db.select().from(projects).orderBy(projects.id);
+    return result[result.length - 1];
   }
   async updateProject(id: number, project: Partial<InsertProject>): Promise<Project | undefined> {
-    const [updated] = await db.update(projects).set(project).where(eq(projects.id, id)).returning();
-    return updated;
+    await db.update(projects).set(project).where(eq(projects.id, id));
+    const result = await db.select().from(projects).where(eq(projects.id, id));
+    return result[0];
   }
   async deleteProject(id: number): Promise<boolean> {
     const result = await db.delete(projects).where(eq(projects.id, id));
@@ -243,4 +263,4 @@ export class SqliteStorage {
   }
 }
 
-export const storage = new SqliteStorage();
+export const storage = new MySqlStorage();

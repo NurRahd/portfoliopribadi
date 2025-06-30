@@ -82,9 +82,21 @@ export function ProfileForm({ profile, isLoading }: ProfileFormProps) {
   const photoUrl = watch("photoUrl");
 
   const onSubmit = (data: InsertProfile) => {
-    // Debug log untuk memastikan payload benar
-    console.log('Payload ke backend:', data);
-    updateProfileMutation.mutate(data);
+    // Hanya field yang dikenali backend
+    const allowedFields = [
+      'fullName', 'position', 'email', 'phone', 'location', 'bio', 'age',
+      'linkedinUrl', 'githubUrl', 'twitterUrl', 'instagramUrl', 'youtubeUrl', 'photoUrl'
+    ];
+    const cleanData: Record<string, any> = {};
+    allowedFields.forEach(key => {
+      let value = (data as any)[key];
+      if (key === 'age') {
+        value = !value || isNaN(Number(value)) ? null : Number(value);
+      }
+      cleanData[key] = value === undefined ? null : value;
+    });
+    console.log('Payload ke backend:', cleanData);
+    updateProfileMutation.mutate(cleanData);
   };
 
   if (isLoading) {
@@ -116,6 +128,7 @@ export function ProfileForm({ profile, isLoading }: ProfileFormProps) {
             id="fullName"
             {...register("fullName")}
             className="mt-2"
+            required
           />
           {errors.fullName && (
             <p className="text-sm text-destructive mt-1">{errors.fullName.message}</p>
@@ -128,6 +141,7 @@ export function ProfileForm({ profile, isLoading }: ProfileFormProps) {
             id="position"
             {...register("position")}
             className="mt-2"
+            required
           />
           {errors.position && (
             <p className="text-sm text-destructive mt-1">{errors.position.message}</p>
@@ -141,6 +155,7 @@ export function ProfileForm({ profile, isLoading }: ProfileFormProps) {
             type="email"
             {...register("email")}
             className="mt-2"
+            required
           />
           {errors.email && (
             <p className="text-sm text-destructive mt-1">{errors.email.message}</p>

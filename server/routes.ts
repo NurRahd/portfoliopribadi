@@ -35,6 +35,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const profile = await storage.updateProfile(profileData);
       res.json(profile);
     } catch (error) {
+      console.error("Profile update error:", error);
       res.status(400).json({ message: "Invalid profile data" });
     }
   });
@@ -55,6 +56,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const skill = await storage.createSkill(skillData);
       res.json(skill);
     } catch (error) {
+      console.error("Skill create error:", error);
       res.status(400).json({ message: "Invalid skill data" });
     }
   });
@@ -71,7 +73,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     } catch (error) {
       console.error("Skill update error:", error);
-      res.status(400).json({ message: "Invalid skill data", detail: error instanceof Error ? error.message : error });
+      res.status(400).json({ message: "Invalid skill data" });
     }
   });
 
@@ -105,6 +107,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const experience = await storage.createExperience(experienceData);
       res.json(experience);
     } catch (error) {
+      console.error("Experience create error:", error);
       res.status(400).json({ message: "Invalid experience data" });
     }
   });
@@ -120,6 +123,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.status(404).json({ message: "Experience not found" });
       }
     } catch (error) {
+      console.error("Experience update error:", error);
       res.status(400).json({ message: "Invalid experience data" });
     }
   });

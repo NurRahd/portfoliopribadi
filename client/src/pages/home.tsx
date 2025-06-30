@@ -14,6 +14,7 @@ import type {
   Activity,
   Project
 } from "@shared/schema";
+import defaultProfile from "@/assets/default-profile.jpg";
 
 function LoadingSkeleton() {
   return (
@@ -149,7 +150,7 @@ export default function Home() {
             <div className="flex-1 flex justify-center">
               <div className="relative w-80 h-80 rounded-full overflow-hidden shadow-2xl border-4 border-primary">
                 <img 
-                  src={profile.profilePhoto || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=2070&auto=format&fit=crop"} 
+                  src={profile?.photoUrl && profile.photoUrl !== "url" ? profile.photoUrl : defaultProfile} 
                   alt="Profile Photo" 
                   className="w-full h-full object-cover"
                 />

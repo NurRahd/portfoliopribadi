@@ -44,6 +44,7 @@ import type {
 import { CRUDTable } from "@/components/admin/crud-table";
 import { FormComponent, FormField } from "@/components/admin/form-component";
 import { useToast } from "@/hooks/use-toast";
+import { ProfileForm } from "@/components/admin/profile-form";
 
 interface StatCardProps {
   title: string;
@@ -142,8 +143,8 @@ export default function Admin() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/skills"] });
-      queryClient.invalidateQueries();
+      queryClient.invalidateQueries({ queryKey: [getEndpointForTab(activeTab)] });
+      queryClient.refetchQueries({ queryKey: [getEndpointForTab(activeTab)] });
       setIsFormOpen(false);
       setEditingItem(null);
       toast({
@@ -185,9 +186,8 @@ export default function Admin() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/skills"] });
-      queryClient.refetchQueries({ queryKey: ["/api/skills"] });
-      queryClient.invalidateQueries();
+      queryClient.invalidateQueries({ queryKey: [getEndpointForTab(activeTab)] });
+      queryClient.refetchQueries({ queryKey: [getEndpointForTab(activeTab)] });
       setIsFormOpen(false);
       setEditingItem(null);
       toast({
@@ -212,7 +212,8 @@ export default function Admin() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries();
+      queryClient.invalidateQueries({ queryKey: [getEndpointForTab(activeTab)] });
+      queryClient.refetchQueries({ queryKey: [getEndpointForTab(activeTab)] });
     },
   });
 
@@ -276,12 +277,16 @@ export default function Admin() {
           fields: [
             { name: 'fullName', label: 'Full Name', type: 'text', required: true },
             { name: 'position', label: 'Position', type: 'text', required: true },
-            { name: 'bio', label: 'Bio', type: 'textarea', required: true },
-            { name: 'location', label: 'Location', type: 'text', required: true },
+            { name: 'bio', label: 'Bio', type: 'textarea' },
+            { name: 'location', label: 'Location', type: 'text' },
             { name: 'email', label: 'Email', type: 'email', required: true },
             { name: 'phone', label: 'Phone', type: 'text' },
-            { name: 'website', label: 'Website', type: 'text' },
-            { name: 'profilePhoto', label: 'Profile Photo', type: 'text' },
+            { name: 'linkedinUrl', label: 'LinkedIn URL', type: 'text' },
+            { name: 'githubUrl', label: 'GitHub URL', type: 'text' },
+            { name: 'twitterUrl', label: 'Twitter URL', type: 'text' },
+            { name: 'instagramUrl', label: 'Instagram URL', type: 'text' },
+            { name: 'youtubeUrl', label: 'YouTube URL', type: 'text' },
+            { name: 'photoUrl', label: 'Profile Photo', type: 'text' },
           ]
         };
       case 'skills':
@@ -471,46 +476,10 @@ export default function Admin() {
 
       case 'profile':
         return (
-          <>
-            <div className="flex items-center justify-between mb-8">
-              <h1 className="text-4xl font-['Playfair_Display'] font-bold text-primary">Profile</h1>
-              <Button onClick={() => handleEdit(profile)} className="bg-primary hover:bg-primary/90" disabled={!profile}>
-                <Edit className="w-4 h-4 mr-2" />
-                Edit Profile
-              </Button>
-            </div>
-            {profile && (
-              <Card className="bg-card border-border">
-                <CardHeader>
-                  <CardTitle className="text-primary">Profile Information</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <Label className="text-primary">Full Name</Label>
-                      <p className="text-foreground">{profile.fullName}</p>
-                    </div>
-                    <div>
-                      <Label className="text-primary">Position</Label>
-                      <p className="text-foreground">{profile.position}</p>
-                    </div>
-                    <div>
-                      <Label className="text-primary">Email</Label>
-                      <p className="text-foreground">{profile.email}</p>
-                    </div>
-                    <div>
-                      <Label className="text-primary">Location</Label>
-                      <p className="text-foreground">{profile.location}</p>
-                    </div>
-                    <div className="md:col-span-2">
-                      <Label className="text-primary">Bio</Label>
-                      <p className="text-foreground">{profile.bio}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </>
+          <div className="max-w-2xl mx-auto">
+            <h2 className="text-2xl font-bold mb-4">Edit Profile</h2>
+            <ProfileForm profile={profile} isLoading={!profile} />
+          </div>
         );
 
       case 'skills':

@@ -20,4 +20,15 @@ db.all("PRAGMA table_info(contact_messages);", [], (err, rows) => {
     }
     db.close();
   });
+});
+
+// Script untuk mengosongkan field photoUrl di tabel profile
+const sqlite3 = require('sqlite3').verbose();
+const db = new sqlite3.Database('sqlite.db');
+db.run('UPDATE profile SET photoUrl = NULL', function(err) {
+  if (err) {
+    return console.error('Gagal mengosongkan photoUrl:', err.message);
+  }
+  console.log('Field photoUrl di tabel profile berhasil dikosongkan!');
+  db.close();
 }); 
